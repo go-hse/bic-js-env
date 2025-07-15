@@ -55,11 +55,13 @@
 
     <h2>JavaScript Trainer (Sandboxed)</h2>
     <br>
-    <textarea id="globals" placeholder='{"x": 5, "user": {"name": "Anna"}}' rows="5"
+    <textarea id="globals" placeholder='{"x": 5, "name": "Anna"}' rows="5"
         cols="50">{"x": 5, "user": {"name": "Anna"}}</textarea>
     <br>
     <div id="editor"></div>
     <button onclick="runCode()">Run</button>
+    <button onclick="saveCode()">Save</button>
+    <button onclick="nextCode()">Next</button>
 
     <h3>Output:</h3>
     <div id="output"></div>
@@ -69,12 +71,55 @@
 
     <script>
         const editor = CodeMirror(document.getElementById("editor"), {
-            value: `let x = 0;\nfor (let i = 0; i < 5; i++) {\n  x += i;\n  console.log('x is', x);\n}`,
+            value: `
+// Globals: x, name
+for (let i = 0; i < 5; i++) {
+    x += i;
+    console.log('x is', x);
+}
+
+let test_name = "test";
+try {
+    test_name = name;
+} catch (ex) {
+    console.log(ex.message);
+}
+
+const output = {
+    x,
+    d: new Date().toString(),
+    test_name
+}
+
+output;
+`,
             mode: "javascript",
             lineNumbers: true
         });
 
         const output = document.getElementById("output");
+
+        const codestring = localStorage.getItem("codes") || "[]";
+        const codes = JSON.parse(codestring);
+        let codeIdx = codes.length - 1;
+
+        nextCode();
+
+        function saveCode() {
+            const globals = document.getElementById("globals").value;
+            const code = editor.getValue();
+            codes.push({ globals, code });
+            localStorage.setItem("codes", JSON.stringify(codes));
+        }
+
+        function nextCode() {
+            codeIdx = codeIdx < codes.length ? ++codeIdx : 0;
+            if (codeIdx < codes.length) {
+                const { globals, code } = codes[codeIdx];
+                document.getElementById("globals").value = globals;
+                editor.setValue(code);
+            }
+        }
 
         function runCode() {
             let globals = {};

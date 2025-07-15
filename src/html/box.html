@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Sandbox</title>
+    <script src="https://cdn.jsdelivr.net/gh/formulajs/formulajs@2.9.3/dist/formula.min.js"></script>
 </head>
 
 <body>
@@ -21,6 +22,8 @@
                 if (typeof globals === 'object' && globals !== null) {
                     Object.assign(context, globals);
                 }
+
+                Object.assign(context, formulajs);
 
                 const result = (function () {
                     with (context) {

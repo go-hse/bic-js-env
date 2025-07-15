@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>JavaScript Sandbox Trainer</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 20px;
+        }
+
+        #editor {
+            height: 600px;
+        }
+
+        .CodeMirror {
+            height: 100% !important;
+            /* Schlüssel: volle Höhe */
+            width: 100% !important;
+            /* volle Breite */
+        }
+
+        #output {
+            background: #f5f5f5;
+            padding: 10px;
+            height: 150px;
+            overflow-y: auto;
+            font-family: monospace;
+            white-space: pre-wrap;
+            border: 1px solid #ccc;
+        }
+
+        iframe {
+            display: none;
+        }
+    </style>
+
+    <!-- CodeMirror -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
+</head>
+
+<body>
+
+    <h2>JavaScript Trainer (Sandboxed)</h2>
+    <br>
+    <textarea id="globals" placeholder='{"x": 5, "user": {"name": "Anna"}}' rows="5"
+        cols="50">{"x": 5, "user": {"name": "Anna"}}</textarea>
+    <br>
+    <div id="editor"></div>
+    <button onclick="runCode()">Run</button>
+
+    <h3>Output:</h3>
+    <div id="output"></div>
+
+    <!-- Sandbox iframe -->
+    <iframe id="sandbox" sandbox="allow-scripts" src="box.html"></iframe>
+
+    <script>
+        const editor = CodeMirror(document.getElementById("editor"), {
+            value: `let x = 0;\nfor (let i = 0; i < 5; i++) {\n  x += i;\n  console.log('x is', x);\n}`,
+            mode: "javascript",
+            lineNumbers: true
+        });
+
+        const output = document.getElementById("output");
+
+        function runCode() {
+            let globals = {};
+            try {
+                const globalsRaw = document.getElementById("globals").value;
+                globals = globalsRaw ? JSON.parse(globalsRaw) : {};
+            } catch (e) {
+                output.textContent = "Global variable parsing error: " + e.message;
+                return;
+            }
+
+
+            output.textContent = "";
+            const code = editor.getValue();
+            const iframe = document.getElementById("sandbox");
+            iframe.contentWindow.postMessage({ code, globals }, "*");
+        }
+
+        window.addEventListener("message", (event) => {
+            if (event.data.type === "log") {
+                output.textContent += "log:" + event.data.data + "\n";
+            }
+            if (event.data.type === "error") {
+                output.textContent += "Error: " + event.data.data + "\n";
+            }
+            if (event.data.type === "result") {
+                output.textContent += "output: " + event.data.data + "\n";
+            }
+        });
+    </script>
+
+</body>
+
+</html>

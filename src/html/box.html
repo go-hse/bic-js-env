@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Sandbox</title>
+</head>
+
+<body>
+    <script>
+        window.addEventListener('message', function (event) {
+            try {
+                const console = {
+                    log: (...args) => parent.postMessage({ type: 'log', data: args.join(' ') }, '*'),
+                    error: (...args) => parent.postMessage({ type: 'error', data: args.join(' ') }, '*')
+                };
+                const { code, globals } = event.data;
+
+                const context = { console };
+
+                if (typeof globals === 'object' && globals !== null) {
+                    Object.assign(context, globals);
+                }
+
+                const result = (function () {
+                    with (context) {
+                        return eval(code);
+                    }
+                })();
+
+                if (result !== undefined) {
+                    let output;
+                    if (typeof result === 'object' && result !== null) {
+                        try {
+                            output = JSON.stringify(result, null, 2);
+                        } catch (e) {
+                            output = '[object with circular reference]';
+                        }
+                    } else {
+                        output = String(result);
+                    }
+                    parent.postMessage({ type: 'result', data: output }, '*');
+                }
+            } catch (e) {
+                parent.postMessage({ type: 'error', data: e.message }, '*');
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -4,3 +4,4 @@
 
 [Deployments](https://github.com/go-hse/bic-js-env/deployments)
 
+[FormulaJS](https://formulajs.info/functions/)

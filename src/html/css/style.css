@@ -1,0 +1,74 @@
+body {
+    font-family: sans-serif;
+    margin: 20px;
+}
+
+#editor {
+    height: 600px;
+}
+
+.CodeMirror {
+    height: 100% !important;
+    /* Schlüssel: volle Höhe */
+    width: 100% !important;
+    /* volle Breite */
+}
+
+#output {
+    background: #f5f5f5;
+    padding: 10px;
+    height: 150px;
+    overflow-y: auto;
+    font-family: monospace;
+    white-space: pre-wrap;
+    border: 1px solid #ccc;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #007BFF;
+    /* Primärfarbe (Blau) */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    width: 140px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+button.green {
+    background-color: #7fbd14;
+}
+
+button.green:hover {
+    background-color: #619010;
+}
+
+button.red {
+    background-color: #bd1414;
+}
+
+button.red:hover {
+    background-color: #8f1212;
+}
+
+
+button:hover {
+    background-color: #0056b3;
+    /* Dunkleres Blau bei Hover */
+    transform: translateY(-1px);
+    /* Kleiner "Lift"-Effekt */
+}
+
+button:active {
+    transform: translateY(0);
+    /* Zurück beim Klicken */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+
+iframe {
+    display: none;
+}

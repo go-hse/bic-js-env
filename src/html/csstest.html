@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <title>3-Spalten Flexbox Layout</title>
+    <style>
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            font-family: sans-serif;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            flex-wrap: nowrap;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        .column {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .row {
+            display: flex;
+            flex: 8;
+            flex-direction: row;
+        }
+
+        .flex1 {
+            flex: 1;
+            padding: 10px;
+        }
+
+        .flex2 {
+            flex: 2;
+            background-color: #b2ebf2;
+        }
+
+        .flex8 {
+            flex: 8;
+            background-color: #e0f7fa;
+            padding: 10px;
+        }
+
+        .flex9 {
+            flex: 9;
+            background-color: #e0f7fa;
+            padding: 10px;
+        }
+
+        /* BUTTONS */
+        button {
+            margin-top: 10px;
+            margin-right: 10px;
+            padding: 10px 20px;
+            background-color: #007BFF;
+            /* Primärfarbe (Blau) */
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 140px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        button.green {
+            background-color: #7fbd14;
+        }
+
+        button.green:hover {
+            background-color: #619010;
+        }
+
+        button.red {
+            background-color: #bd1414;
+        }
+
+        button.red:hover {
+            background-color: #8f1212;
+        }
+
+
+        button:hover {
+            background-color: #0056b3;
+            /* Dunkleres Blau bei Hover */
+            transform: translateY(-1px);
+            /* Kleiner "Lift"-Effekt */
+        }
+
+        button:active {
+            transform: translateY(0);
+            /* Zurück beim Klicken */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="overlay">Datei hier ablegen</div>
+
+    <div class="container">
+        <div class="flex1">
+            <h2>JavaScript Trainer for BIC PE</h2>
+        </div>
+
+        <div class="row">
+            <div class="column flex2">
+                <div class="flex9">
+                    <h3>Global Variables (JSON)</h3>
+                    <div id="json" class="column"></div>
+                </div>
+                <div class="flex1">
+                    <button id="btnCopyNew">New Copy</button>
+                    <button id="btnSave">Save</button>
+                    <button id="btnDel" class="red">Delete</button>
+                    <button id="btnCopyJS">Copy JS</button>
+                    <button id="btnDown">Download</button>
+                </div>
+            </div>
+            <div class="flex1">
+                <input type="text" id="editInput">
+                <br>
+                <select id="selectBox" size="5"></select>
+            </div>
+            <div class="column flex2">
+                <div class="flex9">
+                    <h3>JavaScript</h3>
+                    <div id="editor" class="column"></div>
+                </div>
+                <div class="flex1">
+                    <button id="btnRun" class="green">Run (F1)</button>
+                </div>
+            </div>
+        </div>
+
+
+
+
+    </div>
+
+</body>
+
+</html>

@@ -1,5 +1,6 @@
 
 import { keyboard } from "./keyboard.mjs";
+import { dateFormat, ymdhmsFileFormatter } from "./dateformat.mjs";
 
 const default_script = `
 // Globals: x, name
@@ -61,7 +62,7 @@ window.onload = () => {
     let currentSelectedValue;
     selectBox.addEventListener('change', function () {
         const selected = selectBox.value;
-        output.textContent += `Gewählte Option: ${selected} \n`;
+        output.textContent += `Selected: ${selected} \n`;
         saveToLocalStorage();
         setCode(selected);
         currentSelectedValue = selected;
@@ -78,7 +79,7 @@ window.onload = () => {
         editInput.style.left = rect.left + "px";
         editInput.style.top = (rect.top + optionHeight * optionIndex) + "px";
         editInput.style.width = rect.width + "px";
-        editInput.style.height = optionHeight + "px";
+        editInput.style.height = "14px";
         editInput.value = option.text;
         editInput.style.display = "block";
         editInput.focus();
@@ -104,7 +105,7 @@ window.onload = () => {
             const code = codeEditor.getValue();
             codemap[currentSelectedValue] = { globals, code };
             localStorage.setItem("codemap", JSON.stringify(codemap));
-            output.textContent += `saved to ${currentSelectedValue} \n`;
+            output.textContent += `Saved to ${currentSelectedValue} \n`;
         }
     }
 
@@ -150,6 +151,8 @@ window.onload = () => {
         addOption(formatted);
         codemap[formatted] = { globals, code };
         localStorage.setItem("codemap", JSON.stringify(codemap));
+        output.textContent += `Created: ${formatted} \n`;
+
     });
 
     document.getElementById("btnDel").addEventListener("click", () => {
@@ -157,10 +160,11 @@ window.onload = () => {
         const key = selectBox.value;
         if (selectedIndex !== -1) {
             selectBox.remove(selectedIndex);
-            console.log("remove", selectedIndex, key);
+            output.textContent += `Deleted: ${key} \n`;
             if (codemap[key] !== undefined) {
                 delete codemap[key];
-                localStorage.setItem("codemap", JSON.stringify(codemap));
+                const codemapString = JSON.stringify(codemap);
+                localStorage.setItem("codemap", codemapString);
             }
         }
     });
@@ -176,7 +180,8 @@ window.onload = () => {
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = "daten.json";
+        const datestring = dateFormat(new Date(), ymdhmsFileFormatter);
+        a.download = `bic-code-data.${datestring}.json`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);

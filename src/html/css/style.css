@@ -47,6 +47,13 @@ body {
     margin: 10px;
 }
 
+#editInput {
+    position: absolute;
+    display: none;
+    font-size: 16px;
+    z-index: 1000;
+}
+
 #output {
     background: #f5f5f5;
     padding: 10px;

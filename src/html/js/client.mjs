@@ -47,11 +47,73 @@ window.onload = () => {
     });
 
     const output = document.getElementById("output");
+
+
+    const editInput = document.getElementById('editInput');
+    document.addEventListener('click', function (e) {
+        if (e.target !== editInput && e.target !== selectBox) {
+            editInput.style.display = "none";
+        }
+    });
+
+
     const selectBox = document.getElementById('selectBox');
+    let currentSelectedValue;
     selectBox.addEventListener('change', function () {
         const selected = selectBox.value;
-        output.textContent += `Gewählte Option: ${selected}`;
+        output.textContent += `Gewählte Option: ${selected} \n`;
+        saveToLocalStorage();
         setCode(selected);
+        currentSelectedValue = selected;
+    });
+
+    function startEditingOption(optionIndex) {
+        const option = selectBox.options[optionIndex];
+        if (!option) return;
+        const oldValue = option.value;
+
+        const rect = selectBox.getBoundingClientRect();
+        const optionHeight = rect.height / selectBox.size;
+
+        editInput.style.left = rect.left + "px";
+        editInput.style.top = (rect.top + optionHeight * optionIndex) + "px";
+        editInput.style.width = rect.width + "px";
+        editInput.style.height = optionHeight + "px";
+        editInput.value = option.text;
+        editInput.style.display = "block";
+        editInput.focus();
+
+        // Event-Handler für Eingabe
+        editInput.onkeydown = function (e) {
+            if (e.key === "Enter") {
+                option.text = editInput.value;
+                option.value = editInput.value;
+                editInput.style.display = "none";
+                codemap[option.value] = codemap[oldValue];
+                delete codemap[oldValue];
+                localStorage.setItem("codemap", JSON.stringify(codemap));
+            } else if (e.key === "Escape") {
+                editInput.style.display = "none";
+            }
+        };
+    }
+
+    function saveToLocalStorage() {
+        if (currentSelectedValue) {
+            const globals = jsonEditor.getValue();
+            const code = codeEditor.getValue();
+            codemap[currentSelectedValue] = { globals, code };
+            localStorage.setItem("codemap", JSON.stringify(codemap));
+            output.textContent += `saved to ${currentSelectedValue} \n`;
+        }
+    }
+
+    // Doppelklick auf Select → Bearbeiten starten
+    selectBox.addEventListener('dblclick', function () {
+        const index = selectBox.selectedIndex;
+        if (index !== -1) {
+            startEditingOption(index);
+        }
     });
 
     function setCode(key) {
@@ -76,7 +138,8 @@ window.onload = () => {
         addOption(key);
     }
 
-    document.getElementById("btnSave").addEventListener("click", () => {
+    document.getElementById("btnSave").addEventListener("click", saveToLocalStorage);
+    document.getElementById("btnCopyNew").addEventListener("click", () => {
         const globals = jsonEditor.getValue();
         const code = codeEditor.getValue();
 
@@ -167,10 +230,22 @@ window.onload = () => {
         reader.onload = function (event) {
             try {
                 const json = JSON.parse(event.target.result);
-                output.textContent = JSON.stringify(json, null, 2);
+                const newkeys = Object.keys(json);
+                for (const key of newkeys) {
+                    const newobj = json[key];
+                    if (typeof newobj.code === "string" && typeof newobj.globals === "string") {
+                        if (codemap[key] === undefined) {
+                            addOption(key);
+                        }
+                        codemap[key] = newobj;
+                        console.log("added", key, newobj)
+                    }
+                }
             } catch (err) {
                 output.textContent += 'Fehler beim Lesen der Datei:\n' + err.message;
             }
+            localStorage.setItem("codemap", JSON.stringify(codemap));
+
         };
         reader.readAsText(file);
     });
@@ -185,5 +260,16 @@ window.onload = () => {
         if (event.data.type === "result") {
             output.textContent += "output: " + event.data.data + "\n";
         }
+    });
+
+
+    const observer = new MutationObserver(() => {
+        output.scrollTop = output.scrollHeight;
+    });
+
+    observer.observe(output, {
+        characterData: true,
+        childList: true,
+        subtree: true
     });
 }

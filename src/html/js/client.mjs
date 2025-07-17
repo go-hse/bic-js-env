@@ -23,13 +23,26 @@ const output = {
 output;
 `;
 
+const default_json = `
+{
+    "x": 5, 
+    "name": "Anna"
+}
+`;
+
 const addKey = keyboard();
 
 
 window.onload = () => {
-    const editor = CodeMirror(document.getElementById("editor"), {
+    const codeEditor = CodeMirror(document.getElementById("editor"), {
         value: default_script,
         mode: "javascript",
+        lineNumbers: true
+    });
+
+    const jsonEditor = CodeMirror(document.getElementById("json"), {
+        value: default_json,
+        mode: "application/json",
         lineNumbers: true
     });
 
@@ -44,8 +57,8 @@ window.onload = () => {
     function setCode(key) {
         if (codemap[key] !== undefined) {
             const { globals, code } = codemap[key];
-            document.getElementById("globals").value = globals;
-            editor.setValue(code);
+            jsonEditor.setValue(globals);
+            codeEditor.setValue(code);
         }
     }
 
@@ -64,8 +77,8 @@ window.onload = () => {
     }
 
     document.getElementById("btnSave").addEventListener("click", () => {
-        const globals = document.getElementById("globals").value;
-        const code = editor.getValue();
+        const globals = jsonEditor.getValue();
+        const code = codeEditor.getValue();
 
         const now = new Date();
         const formatted = now.toLocaleString(); // z. B. "16.7.2025, 14:23:45"
@@ -92,23 +105,75 @@ window.onload = () => {
     addKey("F1", runCode);
 
     document.getElementById("btnRun").addEventListener("click", runCode);
+    document.getElementById("btnDown").addEventListener("click", downloadJSON);
+
+    function downloadJSON() {
+        const jsonString = JSON.stringify(codemap, null, 2);
+        const blob = new Blob([jsonString], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "daten.json";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
 
     function runCode() {
         let globals = {};
         try {
-            const globalsRaw = document.getElementById("globals").value;
+            const globalsRaw = jsonEditor.getValue();
             globals = globalsRaw ? JSON.parse(globalsRaw) : {};
         } catch (e) {
             output.textContent = "Global variable parsing error: " + e.message;
             return;
         }
         output.textContent = "";
-        const code = editor.getValue();
+        const code = codeEditor.getValue();
         const iframe = document.getElementById("sandbox");
         iframe.contentWindow.postMessage({ code, globals }, "*");
     };
 
+    const overlay = document.getElementById('overlay');
+    ['dragenter', 'dragover'].forEach(eventName => {
+        document.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            overlay.style.display = 'flex';
+        }, false);
+    });
 
+    ['dragleave', 'drop'].forEach(eventName => {
+        document.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            overlay.style.display = 'none';
+        }, false);
+    });
+
+    // Datei verarbeiten beim Drop
+    document.addEventListener('drop', (e) => {
+        const files = e.dataTransfer.files;
+        if (files.length === 0) return;
+
+        const file = files[0];
+        if (!file.name.endsWith('.json')) {
+            output.textContent += 'Bitte eine JSON-Datei verwenden.';
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function (event) {
+            try {
+                const json = JSON.parse(event.target.result);
+                output.textContent = JSON.stringify(json, null, 2);
+            } catch (err) {
+                output.textContent += 'Fehler beim Lesen der Datei:\n' + err.message;
+            }
+        };
+        reader.readAsText(file);
+    });
 
     window.addEventListener("message", (event) => {
         if (event.data.type === "log") {

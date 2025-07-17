@@ -21,16 +21,41 @@
 </head>
 
 <body>
+    <div id="overlay">Datei hier ablegen</div>
+
     <h2>JavaScript Trainer for BIC PE</h2>
     <br>
-    <textarea id="globals" placeholder='{"x": 5, "name": "Anna"}' rows="5"
-        cols="50">{"x": 5, "user": {"name": "Anna"}}</textarea>
-    <br>
-    <div id="editor"></div>
-    <button id="btnRun" class="green">Run (F1)</button>
-    <button id="btnSave">Save</button>
-    <select id="selectBox" size="5"></select>
-    <button id="btnDel" class="red">Delete</button>
+
+    <div class="container">
+        <div class="item">
+            <h3>Global Variables (JSON)</h3>
+            <div id="json"></div>
+        </div>
+        <div class="item">
+            <h3>JavaScript</h3>
+            <div id="editor"></div>
+            <br>
+            <div>
+                <button id="btnRun" class="green">Run (F1)</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="item">
+            <button id="btnSave">Save</button>
+            <button id="btnDel" class="red">Delete</button>
+            <button id="btnCopyJS">Copy JS</button>
+            <button id="btnDown">Download</button>
+        </div>
+        <div class="item">
+            <select id="selectBox" size="5"></select>
+        </div>
+
+
+    </div>
+
+
     <br>
 
     <h3>Output:</h3>

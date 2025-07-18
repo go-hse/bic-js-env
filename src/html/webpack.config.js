@@ -1,8 +1,7 @@
+const fs = require('fs');
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const HtmlInlineScriptPlugin = require('html-inline-script-webpack-plugin');
-
-const fs = require('fs');
 
 const distPath = path.resolve(__dirname, "..", "..", 'dist');
 console.log("Export to", distPath);

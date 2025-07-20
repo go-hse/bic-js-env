@@ -31,10 +31,9 @@ const default_json = `
 }
 `;
 
-const addKey = keyboard();
+export function Main() {
+    const addKey = keyboard();
 
-
-window.onload = () => {
     const codeEditor = CodeMirror(document.getElementById("editor"), {
         value: default_script,
         mode: "javascript",
@@ -278,3 +277,4 @@ window.onload = () => {
         subtree: true
     });
 }
+

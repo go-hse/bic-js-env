@@ -1,1 +1,366 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"><title>JavaScript Trainer</title><link rel="icon" href="img/icon-512x512.png" sizes="512x512" type="image/png"><link rel="icon" href="img/icon-192x192.png" sizes="192x192" type="image/png"><link rel="apple-touch-icon" href="img/apple-touch-icon.png" sizes="180x180" type="image/png"><link rel="icon" href="img/icon-48x48.png" sizes="48x48" type="image/png"><link rel="icon" href="img/favicon.ico" sizes="any"><link rel="icon" type="image/x-icon" href="/src/html/img/favicon.ico"><link rel="icon" href="img/icon-16x16.png" sizes="16x16" type="image/png"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script><script src="https://cdn.jsdelivr.net/gh/formulajs/formulajs@2.9.3/dist/formula.min.js"></script><link rel="stylesheet" href="css/style.css"></head><body><div id="overlay">Datei hier ablegen</div><div class="container"><div class="flex1"><h2>JavaScript Trainer for BIC PE</h2></div><div class="row"><div class="column flex2"><div class="column flex-large"><h3>Global Variables (JSON)</h3><div id="json" class="flex-large"></div></div></div><div class="column flex2"><div class="column flex-large"><h3>States</h3><div class="flex-large"><input id="editInput"> <select id="selectBox" size="5"></select></div><div class="flex2"><button id="btnCopyNew">New Copy</button> <button id="btnSave">Save</button> <button id="btnDel" class="red">Delete</button> <button id="btnCopyJS">Copy JS</button> <button id="btnDown">Download</button> <span class="info">Use Drag-and-Drop to Upload</span></div></div></div><div class="column flex3"><div class="column flex-large"><h3>JavaScript</h3><div id="editor" class="flex-large"></div></div><div class="flex1"><button id="btnRun" class="green">Run (F1)</button></div></div></div><div id="output"></div><iframe id="sandbox" sandbox="allow-scripts" src="box.html"></iframe><script type="module" src="js/client.mjs"/></div><script defer="defer">(()=>{"use strict";const e=(e,t,n,o,a,d)=>`${e}-${t}-${n} ${o}:${a}:${d}`,t=(e,t,n,o,a,d)=>`${e}.${t}.${n}_${o}.${a}.${d}`,n=["So.","Mo.","Di.","Mi.","Do.","Fr.","Sa."],o=function(){const e={};function t(t,n){if(void 0!==e[t.key]){t.preventDefault();const o=e[t.key];o.active!==n&&(o.active=n,o.callback(n)),n||void 0===o.cbOnRelease||o.cbOnRelease()}else console.log(`unbekannt <${t.key}>`)}return document.addEventListener("keydown",e=>t(e,!0)),document.addEventListener("keyup",e=>t(e,!1)),function(t,n,o){e[t]={active:!1,callback:n,cbOnRelease:o}}}();window.onload=()=>{const a=CodeMirror(document.getElementById("editor"),{value:"\n// Globals: x, name\nfor (let i = 0; i < 5; i++) {\n    x += i;\n    console.log('x is', x);\n}\n\nlet test_name = \"test\";\ntry {\n    test_name = name;\n} catch (ex) {\n    console.log(ex.message);\n}\n\nconst output = {\n    x,\n    d: new Date().toString(),\n    test_name\n}\noutput;\n",mode:"javascript",lineNumbers:!0}),d=CodeMirror(document.getElementById("json"),{value:'\n{\n    "x": 5, \n    "name": "Anna"\n}\n',mode:"application/json",lineNumbers:!0}),c=document.getElementById("output"),l=document.getElementById("editInput");document.addEventListener("click",function(e){e.target!==l&&e.target!==s&&(l.style.display="none")});const s=document.getElementById("selectBox");let i;function r(){if(i){const e=d.getValue(),t=a.getValue();m[i]={globals:e,code:t},localStorage.setItem("codemap",JSON.stringify(m)),c.textContent+=`Saved to ${i} \n`}}function u(e){const t=document.createElement("option");t.text=e,t.value=e,s.appendChild(t)}s.addEventListener("change",function(){const e=s.value;c.textContent+=`Selected: ${e} \n`,r(),function(e){if(void 0!==m[e]){const{globals:t,code:n}=m[e];d.setValue(t),a.setValue(n)}}(e),i=e}),s.addEventListener("dblclick",function(){const e=s.selectedIndex;-1!==e&&function(e){const t=s.options[e];if(!t)return;const n=t.value,o=s.getBoundingClientRect(),a=o.height/s.size;l.style.left=o.left+"px",l.style.top=o.top+a*e+"px",l.style.width=o.width+"px",l.style.height="14px",l.value=t.text,l.style.display="block",l.focus(),l.onkeydown=function(e){"Enter"===e.key?(t.text=l.value,t.value=l.value,l.style.display="none",m[t.value]=m[n],delete m[n],localStorage.setItem("codemap",JSON.stringify(m))):"Escape"===e.key&&(l.style.display="none")}}(e)});const g=localStorage.getItem("codemap")||"{}",m=JSON.parse(g),p=Object.keys(m);for(const e of p)u(e);function y(){let e={};try{const t=d.getValue();e=t?JSON.parse(t):{}}catch(e){return void(c.textContent="Global variable parsing error: "+e.message)}c.textContent="";const t=a.getValue();document.getElementById("sandbox").contentWindow.postMessage({code:t,globals:e},"*")}document.getElementById("btnSave").addEventListener("click",r),document.getElementById("btnCopyNew").addEventListener("click",()=>{const e=d.getValue(),t=a.getValue(),n=(new Date).toLocaleString();document.createElement("option"),u(n),m[n]={globals:e,code:t},localStorage.setItem("codemap",JSON.stringify(m)),c.textContent+=`Created: ${n} \n`}),document.getElementById("btnDel").addEventListener("click",()=>{const e=s.selectedIndex,t=s.value;if(-1!==e&&(s.remove(e),c.textContent+=`Deleted: ${t} \n`,void 0!==m[t])){delete m[t];const e=JSON.stringify(m);localStorage.setItem("codemap",e)}}),o("F1",y),document.getElementById("btnRun").addEventListener("click",y),document.getElementById("btnDown").addEventListener("click",function(){const o=JSON.stringify(m,null,2),a=new Blob([o],{type:"application/json"}),d=URL.createObjectURL(a),c=document.createElement("a");c.href=d;const l=function(t=new Date,o=e){const a=t.getFullYear().toString(),d=(t.getMonth()+1).toString().padStart(2,"0"),c=t.getDate().toString().padStart(2,"0"),l=t.getHours().toString().padStart(2,"0"),s=t.getMinutes().toString().padStart(2,"0"),i=t.getSeconds().toString().padStart(2,"0"),r=t.getDay();return o(a,d,c,l,s,i,n[r])}(new Date,t);c.download=`bic-code-data.${l}.json`,document.body.appendChild(c),c.click(),document.body.removeChild(c),URL.revokeObjectURL(d)});const v=document.getElementById("overlay");["dragenter","dragover"].forEach(e=>{document.addEventListener(e,e=>{e.preventDefault(),e.stopPropagation(),v.style.display="flex"},!1)}),["dragleave","drop"].forEach(e=>{document.addEventListener(e,e=>{e.preventDefault(),e.stopPropagation(),v.style.display="none"},!1)}),document.addEventListener("drop",e=>{const t=e.dataTransfer.files;if(0===t.length)return;const n=t[0];if(!n.name.endsWith(".json"))return void(c.textContent+="Bitte eine JSON-Datei verwenden.");const o=new FileReader;o.onload=function(e){try{const t=JSON.parse(e.target.result),n=Object.keys(t);for(const e of n){const n=t[e];"string"==typeof n.code&&"string"==typeof n.globals&&(void 0===m[e]&&u(e),m[e]=n,console.log("added",e,n))}}catch(e){c.textContent+="Fehler beim Lesen der Datei:\n"+e.message}localStorage.setItem("codemap",JSON.stringify(m))},o.readAsText(n)}),window.addEventListener("message",e=>{"log"===e.data.type&&(c.textContent+="log:"+e.data.data+"\n"),"error"===e.data.type&&(c.textContent+="Error: "+e.data.data+"\n"),"result"===e.data.type&&(c.textContent+="output: "+e.data.data+"\n")}),new MutationObserver(()=>{c.scrollTop=c.scrollHeight}).observe(c,{characterData:!0,childList:!0,subtree:!0})}})();</script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>JavaScript Trainer</title>
+    <link rel="apple-touch-icon" href="img/apple-touch-icon.png" sizes="180x180" type="image/png">
+    <link rel="icon" href="img/icon-48x48.png" sizes="48x48" type="image/png">
+    <link rel="icon" href="img/favicon.ico" sizes="any">
+    <link rel="icon" type="image/x-icon" href="/src/html/img/favicon.ico">
+    <link rel="icon" href="img/icon-16x16.png" sizes="16x16" type="image/png">
+
+    <!-- CodeMirror -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/formulajs/formulajs@2.9.3/dist/formula.min.js"></script>
+<style type="text/css">/*!**************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js!./src/html/css/style.css ***!
+  \**************************************************************************/
+/* Layout */
+
+html,
+body {
+    height: 100%;
+    font-family: sans-serif;
+}
+
+h1,
+h2,
+h3,
+h4 {
+    margin: 0;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    height: 100vh;
+    width: 100vw;
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
+    background-color: #aaa;
+}
+
+.row {
+    display: flex;
+    flex: 20;
+    flex-direction: row;
+}
+
+.hidden {
+    display: none;
+}
+
+.flex1 {
+    flex: 1;
+}
+
+.flex2 {
+    flex: 2;
+}
+
+.flex3 {
+    flex: 3;
+}
+
+.flex8 {
+    flex: 8;
+}
+
+.flex-large {
+    display: flex;
+    flex: 20;
+}
+
+/* Interactive Objects */
+
+#overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(240, 240, 240, 0.8);
+    color: #333;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5em;
+    border: 3px dashed #aaa;
+    z-index: 9999;
+}
+
+.CodeMirror {
+    height: 100% !important;
+    width: 100% !important;
+}
+
+select {
+    height: 100%;
+    width: 100%;
+}
+
+#editInput {
+    position: absolute;
+    display: none;
+    font-size: 12px;
+    z-index: 1000;
+}
+
+#output {
+    background: #f5f5f5;
+    padding: 10px;
+    height: 150px;
+    overflow-y: auto;
+    font-family: monospace;
+    white-space: pre-wrap;
+    border: 1px solid #ccc;
+}
+
+button {
+    margin: 4px;
+    padding: 2px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    width: 80px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.info {
+    font-size: 12px;
+}
+
+button.green {
+    background-color: #7fbd14;
+}
+
+button.green:hover {
+    background-color: #619010;
+}
+
+button.red {
+    background-color: #bd1414;
+}
+
+button.red:hover {
+    background-color: #8f1212;
+}
+
+
+button:hover {
+    background-color: #0056b3;
+    /* Dunkleres Blau bei Hover */
+    transform: translateY(-1px);
+    /* Kleiner "Lift"-Effekt */
+}
+
+button:active {
+    transform: translateY(0);
+    /* Zurück beim Klicken */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+iframe {
+    display: none;
+}
+</style></head>
+
+<body>
+    <div id="overlay">Datei hier ablegen</div>
+
+    <div class="container">
+        <div class="flex1">
+            <h2>JavaScript Trainer for BIC PE</h2>
+        </div>
+
+        <div class="row">
+            <!-- Left Column  -->
+            <div class="column flex2">
+                <div class="column flex-large">
+                    <h3>Global Variables (JSON)</h3>
+                    <div id="json" class="flex-large"></div>
+                </div>
+            </div>
+            <!-- Center Column  -->
+            <div class="column flex2">
+                <div class="column flex-large">
+                    <h3>States</h3>
+                    <div class="flex-large">
+                        <input type="text" id="editInput">
+                        <select id="selectBox" size="5"></select>
+                    </div>
+                    <div class="flex2">
+                        <button id="btnCopyNew">New Copy</button>
+                        <button id="btnSave">Save</button>
+                        <button id="btnDel" class="red">Delete</button>
+                        <button id="btnCopyJS">Copy JS</button>
+                        <button id="btnDown">Download</button>
+                        <span class="info">Use Drag-and-Drop to Upload</span>
+                    </div>
+                </div>
+            </div>
+            <!-- Right Column  -->
+            <div class="column flex3">
+                <div class="column flex-large">
+                    <h3>JavaScript</h3>
+                    <div id="editor" class="flex-large"></div>
+                </div>
+                <div class="flex1">
+                    <button id="btnRun" class="green">Run (F1)</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="output"></div>
+        <div id="iframe-container"></div>
+        <!-- <iframe id="sandbox" sandbox="allow-scripts" src="box.html"></iframe>  -->
+    </div>
+<script defer>/*
+ * ATTENTION: The "eval" devtool has been used (maybe by default in mode: "development").
+ * This devtool is neither made for production nor for readable output files.
+ * It uses "eval()" calls to create a separate source file in the browser devtools.
+ * If you are trying to read the output file, select a different devtool (https://webpack.js.org/configuration/devtool/)
+ * or disable the default devtool with "devtool: false".
+ * If you are looking for production-ready output files, see mode: "production" (https://webpack.js.org/configuration/mode/).
+ */
+/******/ (() => { // webpackBootstrap
+/******/ 	"use strict";
+/******/ 	var __webpack_modules__ = ({
+
+/***/ "./src/html/css/style.css":
+/*!********************************!*\
+  !*** ./src/html/css/style.css ***!
+  \********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+eval("{__webpack_require__.r(__webpack_exports__);\n// extracted by mini-css-extract-plugin\n\n\n//# sourceURL=webpack://bic-js-env/./src/html/css/style.css?\n}");
+
+/***/ }),
+
+/***/ "./src/html/index.js":
+/*!***************************!*\
+  !*** ./src/html/index.js ***!
+  \***************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+eval("{__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _css_style_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./css/style.css */ \"./src/html/css/style.css\");\n/* harmony import */ var _js_client_mjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./js/client.mjs */ \"./src/html/js/client.mjs\");\n/* harmony import */ var _js_iframe_mjs__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./js/iframe.mjs */ \"./src/html/js/iframe.mjs\");\n\r\n\r\n\r\n\r\ndocument.addEventListener('DOMContentLoaded', () => {\r\n    (0,_js_iframe_mjs__WEBPACK_IMPORTED_MODULE_2__.iframe)();\r\n    (0,_js_client_mjs__WEBPACK_IMPORTED_MODULE_1__.Main)();\r\n});\r\n\n\n//# sourceURL=webpack://bic-js-env/./src/html/index.js?\n}");
+
+/***/ }),
+
+/***/ "./src/html/js/client.mjs":
+/*!********************************!*\
+  !*** ./src/html/js/client.mjs ***!
+  \********************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+eval("{__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   Main: () => (/* binding */ Main)\n/* harmony export */ });\n/* harmony import */ var _keyboard_mjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./keyboard.mjs */ \"./src/html/js/keyboard.mjs\");\n/* harmony import */ var _dateformat_mjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./dateformat.mjs */ \"./src/html/js/dateformat.mjs\");\n\r\n\r\n\r\n\r\nconst default_script = `\r\n// Globals: x, name\r\nfor (let i = 0; i < 5; i++) {\r\n    x += i;\r\n    console.log('x is', x);\r\n}\r\n\r\nlet test_name = \"test\";\r\ntry {\r\n    test_name = name;\r\n} catch (ex) {\r\n    console.log(ex.message);\r\n}\r\n\r\nconst output = {\r\n    x,\r\n    d: new Date().toString(),\r\n    test_name\r\n}\r\noutput;\r\n`;\r\n\r\nconst default_json = `\r\n{\r\n    \"x\": 5, \r\n    \"name\": \"Anna\"\r\n}\r\n`;\r\n\r\nfunction Main() {\r\n    const addKey = (0,_keyboard_mjs__WEBPACK_IMPORTED_MODULE_0__.keyboard)();\r\n\r\n    const codeEditor = CodeMirror(document.getElementById(\"editor\"), {\r\n        value: default_script,\r\n        mode: \"javascript\",\r\n        lineNumbers: true\r\n    });\r\n\r\n    const jsonEditor = CodeMirror(document.getElementById(\"json\"), {\r\n        value: default_json,\r\n        mode: \"application/json\",\r\n        lineNumbers: true\r\n    });\r\n\r\n    const output = document.getElementById(\"output\");\r\n\r\n\r\n    const editInput = document.getElementById('editInput');\r\n    document.addEventListener('click', function (e) {\r\n        if (e.target !== editInput && e.target !== selectBox) {\r\n            editInput.style.display = \"none\";\r\n        }\r\n    });\r\n\r\n\r\n    const selectBox = document.getElementById('selectBox');\r\n    let currentSelectedValue;\r\n    selectBox.addEventListener('change', function () {\r\n        const selected = selectBox.value;\r\n        output.textContent += `Selected: ${selected} \\n`;\r\n        saveToLocalStorage();\r\n        setCode(selected);\r\n        currentSelectedValue = selected;\r\n    });\r\n\r\n    function startEditingOption(optionIndex) {\r\n        const option = selectBox.options[optionIndex];\r\n        if (!option) return;\r\n        const oldValue = option.value;\r\n\r\n        const rect = selectBox.getBoundingClientRect();\r\n        const optionHeight = rect.height / selectBox.size;\r\n\r\n        editInput.style.left = rect.left + \"px\";\r\n        editInput.style.top = (rect.top + optionHeight * optionIndex) + \"px\";\r\n        editInput.style.width = rect.width + \"px\";\r\n        editInput.style.height = \"14px\";\r\n        editInput.value = option.text;\r\n        editInput.style.display = \"block\";\r\n        editInput.focus();\r\n\r\n        // Event-Handler für Eingabe\r\n        editInput.onkeydown = function (e) {\r\n            if (e.key === \"Enter\") {\r\n                option.text = editInput.value;\r\n                option.value = editInput.value;\r\n                editInput.style.display = \"none\";\r\n                codemap[option.value] = codemap[oldValue];\r\n                delete codemap[oldValue];\r\n                localStorage.setItem(\"codemap\", JSON.stringify(codemap));\r\n            } else if (e.key === \"Escape\") {\r\n                editInput.style.display = \"none\";\r\n            }\r\n        };\r\n    }\r\n\r\n    function saveToLocalStorage() {\r\n        if (currentSelectedValue) {\r\n            const globals = jsonEditor.getValue();\r\n            const code = codeEditor.getValue();\r\n            codemap[currentSelectedValue] = { globals, code };\r\n            localStorage.setItem(\"codemap\", JSON.stringify(codemap));\r\n            output.textContent += `Saved to ${currentSelectedValue} \\n`;\r\n        }\r\n    }\r\n\r\n    // Doppelklick auf Select → Bearbeiten starten\r\n    selectBox.addEventListener('dblclick', function () {\r\n        const index = selectBox.selectedIndex;\r\n        if (index !== -1) {\r\n            startEditingOption(index);\r\n        }\r\n    });\r\n\r\n    function setCode(key) {\r\n        if (codemap[key] !== undefined) {\r\n            const { globals, code } = codemap[key];\r\n            jsonEditor.setValue(globals);\r\n            codeEditor.setValue(code);\r\n        }\r\n    }\r\n\r\n    function addOption(key) {\r\n        const option = document.createElement('option');\r\n        option.text = key;\r\n        option.value = key;\r\n        selectBox.appendChild(option);\r\n    }\r\n\r\n    const codestring = localStorage.getItem(\"codemap\") || \"{}\";\r\n    const codemap = JSON.parse(codestring);\r\n    const keys = Object.keys(codemap);\r\n    for (const key of keys) {\r\n        addOption(key);\r\n    }\r\n\r\n    document.getElementById(\"btnSave\").addEventListener(\"click\", saveToLocalStorage);\r\n    document.getElementById(\"btnCopyNew\").addEventListener(\"click\", () => {\r\n        const globals = jsonEditor.getValue();\r\n        const code = codeEditor.getValue();\r\n\r\n        const now = new Date();\r\n        const formatted = now.toLocaleString(); // z. B. \"16.7.2025, 14:23:45\"\r\n        const option = document.createElement('option');\r\n\r\n        addOption(formatted);\r\n        codemap[formatted] = { globals, code };\r\n        localStorage.setItem(\"codemap\", JSON.stringify(codemap));\r\n        output.textContent += `Created: ${formatted} \\n`;\r\n\r\n    });\r\n\r\n    document.getElementById(\"btnDel\").addEventListener(\"click\", () => {\r\n        const selectedIndex = selectBox.selectedIndex;\r\n        const key = selectBox.value;\r\n        if (selectedIndex !== -1) {\r\n            selectBox.remove(selectedIndex);\r\n            output.textContent += `Deleted: ${key} \\n`;\r\n            if (codemap[key] !== undefined) {\r\n                delete codemap[key];\r\n                const codemapString = JSON.stringify(codemap);\r\n                localStorage.setItem(\"codemap\", codemapString);\r\n            }\r\n        }\r\n    });\r\n\r\n    addKey(\"F1\", runCode);\r\n\r\n    document.getElementById(\"btnRun\").addEventListener(\"click\", runCode);\r\n    document.getElementById(\"btnDown\").addEventListener(\"click\", downloadJSON);\r\n\r\n    function downloadJSON() {\r\n        const jsonString = JSON.stringify(codemap, null, 2);\r\n        const blob = new Blob([jsonString], { type: \"application/json\" });\r\n        const url = URL.createObjectURL(blob);\r\n        const a = document.createElement(\"a\");\r\n        a.href = url;\r\n        const datestring = (0,_dateformat_mjs__WEBPACK_IMPORTED_MODULE_1__.dateFormat)(new Date(), _dateformat_mjs__WEBPACK_IMPORTED_MODULE_1__.ymdhmsFileFormatter);\r\n        a.download = `bic-code-data.${datestring}.json`;\r\n        document.body.appendChild(a);\r\n        a.click();\r\n        document.body.removeChild(a);\r\n        URL.revokeObjectURL(url);\r\n    }\r\n\r\n    function runCode() {\r\n        let globals = {};\r\n        try {\r\n            const globalsRaw = jsonEditor.getValue();\r\n            globals = globalsRaw ? JSON.parse(globalsRaw) : {};\r\n        } catch (e) {\r\n            output.textContent = \"Global variable parsing error: \" + e.message;\r\n            return;\r\n        }\r\n        output.textContent = \"\";\r\n        const code = codeEditor.getValue();\r\n        const iframe = document.getElementById(\"sandbox\");\r\n        iframe.contentWindow.postMessage({ code, globals }, \"*\");\r\n    };\r\n\r\n    const overlay = document.getElementById('overlay');\r\n    ['dragenter', 'dragover'].forEach(eventName => {\r\n        document.addEventListener(eventName, (e) => {\r\n            e.preventDefault();\r\n            e.stopPropagation();\r\n            overlay.style.display = 'flex';\r\n        }, false);\r\n    });\r\n\r\n    ['dragleave', 'drop'].forEach(eventName => {\r\n        document.addEventListener(eventName, (e) => {\r\n            e.preventDefault();\r\n            e.stopPropagation();\r\n            overlay.style.display = 'none';\r\n        }, false);\r\n    });\r\n\r\n    // Datei verarbeiten beim Drop\r\n    document.addEventListener('drop', (e) => {\r\n        const files = e.dataTransfer.files;\r\n        if (files.length === 0) return;\r\n\r\n        const file = files[0];\r\n        if (!file.name.endsWith('.json')) {\r\n            output.textContent += 'Bitte eine JSON-Datei verwenden.';\r\n            return;\r\n        }\r\n\r\n        const reader = new FileReader();\r\n        reader.onload = function (event) {\r\n            try {\r\n                const json = JSON.parse(event.target.result);\r\n                const newkeys = Object.keys(json);\r\n                for (const key of newkeys) {\r\n                    const newobj = json[key];\r\n                    if (typeof newobj.code === \"string\" && typeof newobj.globals === \"string\") {\r\n                        if (codemap[key] === undefined) {\r\n                            addOption(key);\r\n                        }\r\n                        codemap[key] = newobj;\r\n                        console.log(\"added\", key, newobj)\r\n                    }\r\n                }\r\n            } catch (err) {\r\n                output.textContent += 'Fehler beim Lesen der Datei:\\n' + err.message;\r\n            }\r\n            localStorage.setItem(\"codemap\", JSON.stringify(codemap));\r\n\r\n        };\r\n        reader.readAsText(file);\r\n    });\r\n\r\n    window.addEventListener(\"message\", (event) => {\r\n        if (event.data.type === \"log\") {\r\n            output.textContent += \"log:\" + event.data.data + \"\\n\";\r\n        }\r\n        if (event.data.type === \"error\") {\r\n            output.textContent += \"Error: \" + event.data.data + \"\\n\";\r\n        }\r\n        if (event.data.type === \"result\") {\r\n            output.textContent += \"output: \" + event.data.data + \"\\n\";\r\n        }\r\n    });\r\n\r\n\r\n    const observer = new MutationObserver(() => {\r\n        output.scrollTop = output.scrollHeight;\r\n    });\r\n\r\n    observer.observe(output, {\r\n        characterData: true,\r\n        childList: true,\r\n        subtree: true\r\n    });\r\n}\r\n\r\n\n\n//# sourceURL=webpack://bic-js-env/./src/html/js/client.mjs?\n}");
+
+/***/ }),
+
+/***/ "./src/html/js/dateformat.mjs":
+/*!************************************!*\
+  !*** ./src/html/js/dateformat.mjs ***!
+  \************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+eval("{__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   dateFormat: () => (/* binding */ dateFormat),\n/* harmony export */   dmyFormatter: () => (/* binding */ dmyFormatter),\n/* harmony export */   dmyhmFormatter: () => (/* binding */ dmyhmFormatter),\n/* harmony export */   hmFormatter: () => (/* binding */ hmFormatter),\n/* harmony export */   hmsFormatter: () => (/* binding */ hmsFormatter),\n/* harmony export */   wdmyFormatter: () => (/* binding */ wdmyFormatter),\n/* harmony export */   ymdFormatter: () => (/* binding */ ymdFormatter),\n/* harmony export */   ymdhmsFileFormatter: () => (/* binding */ ymdhmsFileFormatter),\n/* harmony export */   ymdhmsFormatter: () => (/* binding */ ymdhmsFormatter)\n/* harmony export */ });\nconst ymdhmsFormatter = (yyyy, mm, dd, hh, mi, sc) => `${yyyy}-${mm}-${dd} ${hh}:${mi}:${sc}`;\r\nconst ymdhmsFileFormatter = (yyyy, mm, dd, hh, mi, sc) => `${yyyy}.${mm}.${dd}_${hh}.${mi}.${sc}`;\r\nconst dmyFormatter = (yyyy, mm, dd) => `${dd}.${mm}.${yyyy}`;\r\nconst wdmyFormatter = (yyyy, mm, dd, hh, mi, sc, wd) => `${wd}, ${dd}.${mm}.${yyyy}`;\r\nconst dmyhmFormatter = (yyyy, mm, dd, hh, mi) => `${dd}.${mm}.${yyyy} ${hh}:${mi}`;\r\nconst ymdFormatter = (yyyy, mm, dd) => `${yyyy}.${mm}.${dd}`;\r\nconst hmFormatter = (yyyy, mm, dd, hh, mi) => `${hh}:${mi}`;\r\nconst hmsFormatter = (yyyy, mm, dd, hh, mi, sc) => `${hh}:${mi}:${sc}`;\r\n\r\nconst WD = [\"So.\", \"Mo.\", \"Di.\", \"Mi.\", \"Do.\", \"Fr.\", \"Sa.\"];\r\n\r\nfunction dateFormat(d = new Date(), formatter = ymdhmsFormatter) {\r\n    const yyyy = d.getFullYear().toString();\r\n    const mm = (d.getMonth() + 1).toString().padStart(2, \"0\");\r\n    const dd = d.getDate().toString().padStart(2, \"0\");\r\n    const hh = d.getHours().toString().padStart(2, \"0\");\r\n    const mi = d.getMinutes().toString().padStart(2, \"0\");\r\n    const sc = d.getSeconds().toString().padStart(2, \"0\");\r\n    const wd = d.getDay();\r\n    return formatter(yyyy, mm, dd, hh, mi, sc, WD[wd]);\r\n};\r\n\n\n//# sourceURL=webpack://bic-js-env/./src/html/js/dateformat.mjs?\n}");
+
+/***/ }),
+
+/***/ "./src/html/js/iframe.mjs":
+/*!********************************!*\
+  !*** ./src/html/js/iframe.mjs ***!
+  \********************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+eval("{__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   iframe: () => (/* binding */ iframe)\n/* harmony export */ });\n\r\n\r\n\r\nfunction iframe() {\r\n    const iframeEle = document.createElement(`iframe`);\r\n    iframeEle.setAttribute(\"id\", \"sandbox\");\r\n    iframeEle.setAttribute(\"sandbox\", \"allow-same-origin allow-scripts allow-popups allow-forms\");\r\n    iframeEle.onload = function (ele) {\r\n\r\n        function evalInScope(code, contextAsScope) {\r\n            console.log(\"call\", code, contextAsScope);\r\n            return new Function(`with (this) { return eval(${JSON.stringify(code)}); }`).call(contextAsScope);\r\n        }\r\n\r\n        const console = {\r\n            log: (...args) => window.parent.postMessage({ type: 'log', data: args.join(' ') }, '*'),\r\n            error: (...args) => window.parent.postMessage({ type: 'error', data: args.join(' ') }, '*')\r\n        };\r\n\r\n        console.log(`myframe is loaded`, ele);\r\n\r\n        const context = { console };\r\n        Object.assign(context, formulajs);\r\n\r\n        evalInScope(`for(let i=0; i<3; ++i) console.log(i);`, context);\r\n\r\n        ele.target.contentWindow.addEventListener('message', function (event) {\r\n\r\n            const { code, globals } = event.data;\r\n            if (typeof globals === 'object' && globals !== null) {\r\n                Object.assign(context, globals);\r\n            }\r\n\r\n            try {\r\n                const result = evalInScope(code, context);\r\n\r\n                if (result !== undefined) {\r\n                    let output;\r\n                    if (typeof result === 'object' && result !== null) {\r\n                        try {\r\n                            output = JSON.stringify(result, null, 2);\r\n                        } catch (e) {\r\n                            output = '[object with circular reference]';\r\n                        }\r\n                    } else {\r\n                        output = String(result);\r\n                    }\r\n                    window.parent.postMessage({ type: 'result', data: output }, '*');\r\n                }\r\n            } catch (e) {\r\n                window.parent.postMessage({ type: 'error', data: e.message }, '*');\r\n            }\r\n        });\r\n\r\n\r\n\r\n    };\r\n    document.body.appendChild(iframeEle);\r\n}\n\n//# sourceURL=webpack://bic-js-env/./src/html/js/iframe.mjs?\n}");
+
+/***/ }),
+
+/***/ "./src/html/js/keyboard.mjs":
+/*!**********************************!*\
+  !*** ./src/html/js/keyboard.mjs ***!
+  \**********************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+eval("{__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   keyboard: () => (/* binding */ keyboard)\n/* harmony export */ });\nfunction keyboard() {\r\n    const keys = {};\r\n\r\n    // toggle wird bei keydown:active=true oder keyup:active=false aufgerufen\r\n    function toggle(ev, active) {\r\n        if (keys[ev.key] !== undefined) {\r\n            ev.preventDefault();\r\n            const KeyObject = keys[ev.key];\r\n            if (KeyObject.active !== active) {\r\n                KeyObject.active = active;\r\n                KeyObject.callback(active);\r\n            }\r\n\r\n            if (!active && KeyObject.cbOnRelease !== undefined) {\r\n                KeyObject.cbOnRelease();\r\n            }\r\n        } else {\r\n            console.log(`unbekannt <${ev.key}>`);\r\n        }\r\n    }\r\n\r\n    // Listener\r\n    document.addEventListener(\"keydown\", (ev) => toggle(ev, true));\r\n    document.addEventListener(\"keyup\", (ev) => toggle(ev, false));\r\n\r\n    function add(key, callback, cbOnRelease) {\r\n        keys[key] = { active: false, callback, cbOnRelease };  // KeyObject, oben\r\n    }\r\n\r\n    return add;\r\n}\r\n\r\n\n\n//# sourceURL=webpack://bic-js-env/./src/html/js/keyboard.mjs?\n}");
+
+/***/ })
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	(() => {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__webpack_require__.d = (exports, definition) => {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	(() => {
+/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	(() => {
+/******/ 		// define __esModule on exports
+/******/ 		__webpack_require__.r = (exports) => {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/************************************************************************/
+/******/ 	
+/******/ 	// startup
+/******/ 	// Load entry module and return exports
+/******/ 	// This entry module can't be inlined because the eval devtool is used.
+/******/ 	var __webpack_exports__ = __webpack_require__("./src/html/index.js");
+/******/ 	
+/******/ })()
+;</script></body>
+
+</html>

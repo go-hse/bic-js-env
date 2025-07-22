@@ -49,6 +49,11 @@ h4 {
     flex: 3;
 }
 
+.flex5 {
+    flex: 5;
+}
+
+
 .flex8 {
     flex: 8;
 }
@@ -79,6 +84,9 @@ h4 {
 .CodeMirror {
     height: 100% !important;
     width: 100% !important;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-x: hidden;
 }
 
 select {

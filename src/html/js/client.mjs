@@ -31,7 +31,7 @@ const default_json = `
 }
 `;
 
-export function Main() {
+export async function Main() {
     const addKey = keyboard();
 
     const codeEditor = CodeMirror(document.getElementById("editor"), {
@@ -43,11 +43,11 @@ export function Main() {
     const jsonEditor = CodeMirror(document.getElementById("json"), {
         value: default_json,
         mode: "application/json",
-        lineNumbers: true
+        lineNumbers: true,
+        lineWrapping: true
     });
 
     const output = document.getElementById("output");
-
 
     const editInput = document.getElementById('editInput');
     document.addEventListener('click', function (e) {
@@ -219,6 +219,21 @@ export function Main() {
         }, false);
     });
 
+
+    function codesFromJSON(json) {
+        const newkeys = Object.keys(json);
+        for (const key of newkeys) {
+            const newobj = json[key];
+            if (typeof newobj.code === "string" && typeof newobj.globals === "string") {
+                if (codemap[key] === undefined) {
+                    addOption(key);
+                }
+                codemap[key] = newobj;
+                console.log("added", key, newobj)
+            }
+        }
+    }
+
     // Datei verarbeiten beim Drop
     document.addEventListener('drop', (e) => {
         const files = e.dataTransfer.files;
@@ -234,17 +249,7 @@ export function Main() {
         reader.onload = function (event) {
             try {
                 const json = JSON.parse(event.target.result);
-                const newkeys = Object.keys(json);
-                for (const key of newkeys) {
-                    const newobj = json[key];
-                    if (typeof newobj.code === "string" && typeof newobj.globals === "string") {
-                        if (codemap[key] === undefined) {
-                            addOption(key);
-                        }
-                        codemap[key] = newobj;
-                        console.log("added", key, newobj)
-                    }
-                }
+                codesFromJSON(json);
             } catch (err) {
                 output.textContent += 'Fehler beim Lesen der Datei:\n' + err.message;
             }
@@ -276,5 +281,14 @@ export function Main() {
         childList: true,
         subtree: true
     });
+
+    try {
+        const response = await fetch('/dist/default_codes.json');
+        const default_codes = await response.json();
+        codesFromJSON(default_codes);
+    } catch (ex) {
+        console.log(ex);
+    }
+
 }
 

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fenster mit Vordergrund-Steuerung</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background-color: #f0f0f0;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+        }
+
+        .window {
+            width: 300px;
+            height: 200px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: absolute;
+            top: 50px;
+            left: 50px;
+            display: flex;
+            flex-direction: column;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .title-bar {
+            background-color: #2c3e50;
+            color: white;
+            padding: 10px;
+            cursor: move;
+            user-select: none;
+        }
+
+        .content {
+            padding: 10px;
+            flex: 1;
+            background-color: #fdfdfd;
+            overflow: auto;
+        }
+
+        .resizer {
+            width: 16px;
+            height: 16px;
+            background: transparent;
+            border-right: 2px solid #888;
+            border-bottom: 2px solid #888;
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            cursor: se-resize;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="window" id="window1">
+        <div class="title-bar">Fenster 1</div>
+        <div class="content">Dies ist ein verschieb- und skalierbares Fenster.</div>
+        <div class="resizer"></div>
+    </div>
+
+    <div class="window" id="window2" style="top: 120px; left: 400px;">
+        <div class="title-bar">Fenster 2</div>
+        <div class="content">Noch ein Fenster zum Verschieben und Vergrößern.</div>
+        <div class="resizer"></div>
+    </div>
+
+    <script>
+        let topZIndex = 1; // Startwert für z-index
+
+        function bringToFront(el) {
+            topZIndex += 1;
+            el.style.zIndex = topZIndex;
+        }
+
+        function makeDraggable(windowEl) {
+            const titleBar = windowEl.querySelector('.title-bar');
+            let offsetX = 0, offsetY = 0;
+            let isDragging = false;
+
+            titleBar.addEventListener('mousedown', function (e) {
+                isDragging = true;
+                offsetX = e.clientX - windowEl.offsetLeft;
+                offsetY = e.clientY - windowEl.offsetTop;
+                document.body.style.userSelect = 'none';
+                bringToFront(windowEl);
+            });
+
+            document.addEventListener('mousemove', function (e) {
+                if (isDragging) {
+                    let x = e.clientX - offsetX;
+                    let y = e.clientY - offsetY;
+
+                    const maxX = window.innerWidth - windowEl.offsetWidth;
+                    const maxY = window.innerHeight - windowEl.offsetHeight;
+
+                    x = Math.max(0, Math.min(x, maxX));
+                    y = Math.max(0, Math.min(y, maxY));
+
+                    windowEl.style.left = x + 'px';
+                    windowEl.style.top = y + 'px';
+                }
+            });
+
+            document.addEventListener('mouseup', function () {
+                isDragging = false;
+                document.body.style.userSelect = '';
+            });
+        }
+
+        function makeResizable(windowEl) {
+            const resizer = windowEl.querySelector('.resizer');
+            let isResizing = false;
+            let minWidth = 200;
+            let minHeight = 100;
+
+            resizer.addEventListener('mousedown', function (e) {
+                isResizing = true;
+                bringToFront(windowEl);
+                document.body.style.userSelect = 'none';
+                e.preventDefault();
+            });
+
+            document.addEventListener('mousemove', function (e) {
+                if (isResizing) {
+                    let newWidth = e.clientX - windowEl.offsetLeft;
+                    let newHeight = e.clientY - windowEl.offsetTop;
+
+                    newWidth = Math.max(minWidth, Math.min(newWidth, window.innerWidth - windowEl.offsetLeft));
+                    newHeight = Math.max(minHeight, Math.min(newHeight, window.innerHeight - windowEl.offsetTop));
+
+                    windowEl.style.width = newWidth + 'px';
+                    windowEl.style.height = newHeight + 'px';
+                }
+            });
+
+            document.addEventListener('mouseup', function () {
+                isResizing = false;
+                document.body.style.userSelect = '';
+            });
+        }
+
+        document.querySelectorAll('.window').forEach(win => {
+            makeDraggable(win);
+            makeResizable(win);
+        });
+    </script>
+</body>
+
+</html>

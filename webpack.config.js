@@ -37,6 +37,5 @@ module.exports = {
         }),
         new HtmlInlineCssPlugin(),
         new HtmlInlineScriptPlugin(),
-    ],
-    mode: 'development',
+    ]
 };

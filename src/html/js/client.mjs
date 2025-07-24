@@ -1,6 +1,7 @@
 
 import { keyboard } from "./keyboard.mjs";
 import { dateFormat, ymdhmsFileFormatter } from "./dateformat.mjs";
+import { Windows, dom, Button } from "./dom.mjs";
 
 const default_script = `
 // Globals: x, name
@@ -34,30 +35,42 @@ const default_json = `
 export async function Main() {
     const addKey = keyboard();
 
-    const codeEditor = CodeMirror(document.getElementById("editor"), {
+    const windowManager = Windows();
+    const editorWindow = windowManager.create("editor", document.body, { x: 0, y: 0, w: 400, h: 600 });
+    const jsonWindow = windowManager.create("json", document.body, { x: 401, y: 0, w: 400, h: 600 });
+    const outputWindow = windowManager.create("output", document.body, { x: 802, y: 100, w: 200, h: 600 });
+    const interfaceWindow = windowManager.create("ui", document.body, { x: 802, y: 0, w: 200, h: 600 });
+
+
+    const codeEditor = CodeMirror(editorWindow.contentElement, {
         value: default_script,
         mode: "javascript",
         lineNumbers: true
     });
 
-    const jsonEditor = CodeMirror(document.getElementById("json"), {
+    const jsonEditor = CodeMirror(jsonWindow.contentElement, {
         value: default_json,
         mode: "application/json",
         lineNumbers: true,
         lineWrapping: true
     });
 
-    const output = document.getElementById("output");
+    const output = outputWindow.contentElement;
 
-    const editInput = document.getElementById('editInput');
+
+
+    const editInput = dom("input", { type: "text" });
+    const selectBox = dom("select", { size: "5" });
+
+    interfaceWindow.contentElement.appendChild(editInput);
+    interfaceWindow.contentElement.appendChild(selectBox);
+
     document.addEventListener('click', function (e) {
         if (e.target !== editInput && e.target !== selectBox) {
             editInput.style.display = "none";
         }
     });
 
-
-    const selectBox = document.getElementById('selectBox');
     let currentSelectedValue;
     selectBox.addEventListener('change', function () {
         const selected = selectBox.value;
@@ -138,8 +151,8 @@ export async function Main() {
         addOption(key);
     }
 
-    document.getElementById("btnSave").addEventListener("click", saveToLocalStorage);
-    document.getElementById("btnCopyNew").addEventListener("click", () => {
+    Button("Save", interfaceWindow.contentElement, saveToLocalStorage);
+    Button("New", interfaceWindow.contentElement, () => {
         const globals = jsonEditor.getValue();
         const code = codeEditor.getValue();
 
@@ -154,7 +167,8 @@ export async function Main() {
 
     });
 
-    document.getElementById("btnDel").addEventListener("click", () => {
+
+    Button("Delete", interfaceWindow.contentElement, () => {
         const selectedIndex = selectBox.selectedIndex;
         const key = selectBox.value;
         if (selectedIndex !== -1) {
@@ -170,8 +184,8 @@ export async function Main() {
 
     addKey("F1", runCode);
 
-    document.getElementById("btnRun").addEventListener("click", runCode);
-    document.getElementById("btnDown").addEventListener("click", downloadJSON);
+    Button("Run (F1", interfaceWindow.contentElement, runCode);
+    Button("Download", interfaceWindow.contentElement, downloadJSON);
 
     function downloadJSON() {
         const jsonString = JSON.stringify(codemap, null, 2);
@@ -202,7 +216,9 @@ export async function Main() {
         iframe.contentWindow.postMessage({ code, globals }, "*");
     };
 
-    const overlay = document.getElementById('overlay');
+    const overlay = dom("div");
+    document.body.appendChild(overlay);
+
     ['dragenter', 'dragover'].forEach(eventName => {
         document.addEventListener(eventName, (e) => {
             e.preventDefault();

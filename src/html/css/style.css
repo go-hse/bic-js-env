@@ -97,13 +97,17 @@ h4 {
 select {
     height: 100%;
     width: 100%;
+    position: relative;
 }
 
-#editInput {
+.select-input {
     position: absolute;
     display: none;
     font-size: 12px;
     z-index: 1000;
+    border: 1px solid #aaa;
+    margin: 0;
+    padding: 0;
 }
 
 #output {

@@ -57,13 +57,11 @@ export async function Main() {
 
     const output = outputWindow.contentElement;
 
-
-
-    const editInput = dom("input", { type: "text" });
+    const editInput = dom("input", { type: "text", class: "select-input" });
     const selectBox = dom("select", { size: "5" });
 
-    interfaceWindow.contentElement.appendChild(editInput);
     interfaceWindow.contentElement.appendChild(selectBox);
+    interfaceWindow.contentElement.appendChild(editInput);
 
     document.addEventListener('click', function (e) {
         if (e.target !== editInput && e.target !== selectBox) {
@@ -80,17 +78,24 @@ export async function Main() {
         currentSelectedValue = selected;
     });
 
+    const titleRectHeight = interfaceWindow.titleElement.getBoundingClientRect().height;
+
+
     function startEditingOption(optionIndex) {
         const option = selectBox.options[optionIndex];
+        const optRect = option.getBoundingClientRect();
+
         if (!option) return;
         const oldValue = option.value;
 
         const rect = selectBox.getBoundingClientRect();
-        const optionHeight = rect.height / selectBox.size;
+        const top = titleRectHeight + 5 + optRect.height * optionIndex; // rect.top + 
 
-        editInput.style.left = rect.left + "px";
-        editInput.style.top = (rect.top + optionHeight * optionIndex) + "px";
-        editInput.style.width = rect.width + "px";
+        console.log(`i ${optionIndex} rh ${rect.height} oh ${optRect.height}`);
+
+        editInput.style.left = "0px";
+        editInput.style.top = top + "px";
+        editInput.style.width = (rect.width - 20) + "px";
         editInput.style.height = "14px";
         editInput.value = option.text;
         editInput.style.display = "block";
@@ -151,7 +156,7 @@ export async function Main() {
         addOption(key);
     }
 
-    Button("Save", interfaceWindow.contentElement, saveToLocalStorage);
+    Button("Save", interfaceWindow.contentElement, saveToLocalStorage, "Saves all entries (code+json) to local storage in your browser");
     Button("New", interfaceWindow.contentElement, () => {
         const globals = jsonEditor.getValue();
         const code = codeEditor.getValue();
@@ -165,7 +170,7 @@ export async function Main() {
         localStorage.setItem("codemap", JSON.stringify(codemap));
         output.textContent += `Created: ${formatted} \n`;
 
-    });
+    }, "Creates a new entry (name: current date) with the actual code+json.");
 
 
     Button("Delete", interfaceWindow.contentElement, () => {
@@ -180,12 +185,12 @@ export async function Main() {
                 localStorage.setItem("codemap", codemapString);
             }
         }
-    });
+    }, "Deletes current item (code+json)");
 
     addKey("F1", runCode);
 
-    Button("Run (F1", interfaceWindow.contentElement, runCode);
-    Button("Download", interfaceWindow.contentElement, downloadJSON);
+    Button("Run (F1)", interfaceWindow.contentElement, runCode, "Runs the code with json-data");
+    Button("Download", interfaceWindow.contentElement, downloadJSON, "Downloads all items (code+json) together in a single json-file. You can upload that file by dragging it in here.");
 
     function downloadJSON() {
         const jsonString = JSON.stringify(codemap, null, 2);

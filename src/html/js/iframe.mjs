@@ -6,7 +6,7 @@ export function iframe() {
     iframeEle.onload = function (ele) {
 
         function evalInScope(code, contextAsScope) {
-            console.log("call", code, contextAsScope);
+            // console.log("call", code, contextAsScope);
             return new Function(`with (this) { return eval(${JSON.stringify(code)}); }`).call(contextAsScope);
         }
 
@@ -15,12 +15,12 @@ export function iframe() {
             error: (...args) => window.parent.postMessage({ type: 'error', data: args.join(' ') }, '*')
         };
 
-        console.log(`myframe is loaded`, ele);
+        // console.log(`myframe is loaded`, ele);
 
         const context = { console };
         Object.assign(context, formulajs);
 
-        evalInScope(`for(let i=0; i<3; ++i) console.log(i);`, context);
+        // evalInScope(`for(let i=0; i<3; ++i) console.log(i);`, context);
 
         ele.target.contentWindow.addEventListener('message', function (event) {
 

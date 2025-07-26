@@ -62,6 +62,13 @@ export function checkBox(parent, id, label) {
     });
 }
 
+export function removeOptions(selectElement) {
+    let i, L = selectElement.options.length - 1;
+    for (i = L; i >= 0; i--) {
+        selectElement.remove(i);
+    }
+}
+
 
 ///////////////////////////////////////////////////////////////////////////
 // WINDOW-Handling
@@ -120,8 +127,7 @@ export function Windows() {
 
                 windowElement.style.left = newX + 'px';
                 windowElement.style.top = newY + 'px';
-                console.log("move", id, newX, newY);
-
+                // console.log("move", id, newX, newY);
             }
         });
 
@@ -130,7 +136,7 @@ export function Windows() {
                 isDragging = undefined;
                 document.body.style.userSelect = '';
                 setPos(id, newX, newY);
-                console.log("mouseup isDragging", id);
+                // console.log("mouseup isDragging", id);
             }
         });
 
@@ -161,12 +167,12 @@ export function Windows() {
 
                 windowElement.style.width = newWidth + 'px';
                 windowElement.style.height = newHeight + 'px';
-                console.log("resize", id, newWidth, newHeight);
+                // console.log("resize", id, newWidth, newHeight);
             }
         });
 
         document.addEventListener('mouseup', function () {
-            console.log("mouseup isResizing", id, isResizing);
+            // console.log("mouseup isResizing", id, isResizing);
             if (isResizing === id) {
                 isResizing = undefined;
                 document.body.style.userSelect = '';
@@ -231,7 +237,7 @@ export function Windows() {
         const item = localStorage.getItem(`window.${id}`);
         if (item && windows[id]) {
             const options = JSON.parse(item);
-            console.log("retrieve", id, windows[id].options);
+            // console.log("retrieve", id, windows[id].options);
             const windowElement = windows[id].windowElement;
             setPosSize(windowElement, options.x, options.y, options.w, options.h);
             windows[id].options = options;

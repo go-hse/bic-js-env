@@ -1,10 +1,11 @@
 
 import { keyboard } from "./keyboard.mjs";
-import { dateFormat, ymdhmsFileFormatter } from "./dateformat.mjs";
-import { Windows, dom, Button } from "./dom.mjs";
+import { dateFormat, hmsFormatter, ymdhmsFileFormatter } from "./dateformat.mjs";
+import { Windows, dom, Button, removeOptions } from "./dom.mjs";
+import { CodeMap } from "./codemap.mjs";
 
 const default_script = `
-// Globals: x, name
+// Default
 for (let i = 0; i < 5; i++) {
     x += i;
     console.log('x is', x);
@@ -28,18 +29,25 @@ output;
 const default_json = `
 {
     "x": 5, 
-    "name": "Anna"
+    "name": "Anna",
+    "info": "hard coded default, not in local storage"
 }
 `;
 
+const editorID = "editor";
+const inputID = "json";
+const outputID = "output";
+const uiID = "ui";
+
 export async function Main() {
+
     const addKey = keyboard();
 
     const windowManager = Windows();
-    const editorWindow = windowManager.create("editor", document.body, { x: 0, y: 0, w: 400, h: 600 });
-    const jsonWindow = windowManager.create("json", document.body, { x: 401, y: 0, w: 400, h: 600 });
-    const outputWindow = windowManager.create("output", document.body, { x: 802, y: 100, w: 200, h: 600 });
-    const interfaceWindow = windowManager.create("ui", document.body, { x: 802, y: 0, w: 200, h: 600 });
+    const editorWindow = windowManager.create(editorID, document.body, { x: 0, y: 0, w: 400, h: 600 });
+    const jsonWindow = windowManager.create(inputID, document.body, { x: 401, y: 0, w: 400, h: 600 });
+    const outputWindow = windowManager.create(outputID, document.body, { x: 802, y: 100, w: 200, h: 600 });
+    const interfaceWindow = windowManager.create(uiID, document.body, { x: 802, y: 0, w: 200, h: 600 });
 
 
     const codeEditor = CodeMirror(editorWindow.contentElement, {
@@ -57,6 +65,10 @@ export async function Main() {
 
     const output = outputWindow.contentElement;
 
+
+    // SELECTBOX
+
+
     const editInput = dom("input", { type: "text", class: "select-input" });
     const selectBox = dom("select", { size: "5" });
 
@@ -69,25 +81,46 @@ export async function Main() {
         }
     });
 
-    let currentSelectedValue;
     selectBox.addEventListener('change', function () {
-        const selected = selectBox.value;
+        selectItem(selectBox.value);
+    });
+
+
+    let currentSelectedValue;
+    function selectItem(selected, code, globals) {
         output.textContent += `Selected: ${selected} \n`;
         saveToLocalStorage();
-        setCode(selected);
+        setCodeToWindows(selected, code, globals);
         currentSelectedValue = selected;
-    });
+        setTitles(currentSelectedValue);
+
+        if (selectBox.value !== currentSelectedValue) selectBox.value = currentSelectedValue;
+    }
+
+    function selectItemByIndex(idx, code, globals) {
+        const keys = selectBox.options;
+        if (idx < keys.length) {
+            selectItem(keys[idx].value, code, globals);
+        }
+    }
+
+    const codeMapMgr = CodeMap((k) => addOption(k), () => removeOptions(selectBox), selectItemByIndex);
+
 
     const titleRectHeight = interfaceWindow.titleElement.getBoundingClientRect().height;
 
+    function setTitles(title) {
+        windowManager.setTitle(editorID, `JS ${title}`);
+        windowManager.setTitle(outputID, `Output from ${title}`);
+        windowManager.setTitle(inputID, `Input for ${title}`);
+        windowManager.setTitle(uiID, `Selected ${title}`);
+    }
 
     function startEditingOption(optionIndex) {
         const option = selectBox.options[optionIndex];
         const optRect = option.getBoundingClientRect();
 
         if (!option) return;
-        const oldValue = option.value;
-
         const rect = selectBox.getBoundingClientRect();
         const top = titleRectHeight + 5 + optRect.height * optionIndex; // rect.top + 
 
@@ -104,28 +137,19 @@ export async function Main() {
         // Event-Handler für Eingabe
         editInput.onkeydown = function (e) {
             if (e.key === "Enter") {
-                option.text = editInput.value;
-                option.value = editInput.value;
+                const renamedSelectedValue = editInput.value
+                option.text = renamedSelectedValue;
+                option.value = renamedSelectedValue;
                 editInput.style.display = "none";
-                codemap[option.value] = codemap[oldValue];
-                delete codemap[oldValue];
-                localStorage.setItem("codemap", JSON.stringify(codemap));
+                codeMapMgr.rename(currentSelectedValue, renamedSelectedValue);
+                currentSelectedValue = renamedSelectedValue;
+                output.textContent += `Saved to ${currentSelectedValue} \n`;
+                setTitles(currentSelectedValue);
             } else if (e.key === "Escape") {
                 editInput.style.display = "none";
             }
         };
     }
-
-    function saveToLocalStorage() {
-        if (currentSelectedValue) {
-            const globals = jsonEditor.getValue();
-            const code = codeEditor.getValue();
-            codemap[currentSelectedValue] = { globals, code };
-            localStorage.setItem("codemap", JSON.stringify(codemap));
-            output.textContent += `Saved to ${currentSelectedValue} \n`;
-        }
-    }
-
     // Doppelklick auf Select → Bearbeiten starten
     selectBox.addEventListener('dblclick', function () {
         const index = selectBox.selectedIndex;
@@ -134,14 +158,6 @@ export async function Main() {
         }
     });
 
-    function setCode(key) {
-        if (codemap[key] !== undefined) {
-            const { globals, code } = codemap[key];
-            jsonEditor.setValue(globals);
-            codeEditor.setValue(code);
-        }
-    }
-
     function addOption(key) {
         const option = document.createElement('option');
         option.text = key;
@@ -149,15 +165,29 @@ export async function Main() {
         selectBox.appendChild(option);
     }
 
-    const codestring = localStorage.getItem("codemap") || "{}";
-    const codemap = JSON.parse(codestring);
-    const keys = Object.keys(codemap);
-    for (const key of keys) {
-        addOption(key);
+    function saveToLocalStorage() {
+        if (currentSelectedValue) {
+            const globals = jsonEditor.getValue();
+            const code = codeEditor.getValue();
+            codeMapMgr.set(currentSelectedValue, { globals, code });
+            const keys = codeMapMgr.save();
+            output.textContent += `Saving: ${keys}\n`;
+        }
     }
 
-    Button("Save", interfaceWindow.contentElement, saveToLocalStorage, "Saves all entries (code+json) to local storage in your browser");
-    Button("New", interfaceWindow.contentElement, () => {
+
+    function setCodeToWindows(key, code, globals) {
+        if (code != undefined && globals !== undefined) {
+            jsonEditor.setValue(globals);
+            codeEditor.setValue(code);
+        } else if (codeMapMgr.has(key)) {
+            const { globals, code } = codeMapMgr.get(key);
+            jsonEditor.setValue(globals);
+            codeEditor.setValue(code);
+        }
+    }
+
+    function newItem() {
         const globals = jsonEditor.getValue();
         const code = codeEditor.getValue();
 
@@ -166,11 +196,12 @@ export async function Main() {
         const option = document.createElement('option');
 
         addOption(formatted);
-        codemap[formatted] = { globals, code };
-        localStorage.setItem("codemap", JSON.stringify(codemap));
+        codeMapMgr.set(formatted, { globals, code })
         output.textContent += `Created: ${formatted} \n`;
+    }
 
-    }, "Creates a new entry (name: current date) with the actual code+json.");
+    Button("Save", interfaceWindow.contentElement, saveToLocalStorage, "Saves all entries (code+json) to local storage in your browser");
+    Button("New", interfaceWindow.contentElement, newItem, "Creates a new entry (name: current date) with the actual code+json.");
 
 
     Button("Delete", interfaceWindow.contentElement, () => {
@@ -178,16 +209,20 @@ export async function Main() {
         const key = selectBox.value;
         if (selectedIndex !== -1) {
             selectBox.remove(selectedIndex);
-            output.textContent += `Deleted: ${key} \n`;
             if (codemap[key] !== undefined) {
                 delete codemap[key];
-                const codemapString = JSON.stringify(codemap);
-                localStorage.setItem("codemap", codemapString);
+                const keys = Object.keys(codemap).join(", ");
+                output.textContent += `Deleted: ${key} remaining [${keys}]\n`;
             }
         }
     }, "Deletes current item (code+json)");
 
     addKey("F1", runCode);
+    for (let i = 0; i < 9; ++i) {
+        addKey(`${i + 1}`, () => { selectItemByIndex(i) }, undefined, { ctrlKey: true, altKey: false, shiftKey: false, metaKey: false });
+    }
+    addKey(`s`, saveToLocalStorage, undefined, { ctrlKey: false, altKey: true, shiftKey: false, metaKey: false });
+    addKey(`n`, newItem, undefined, { ctrlKey: false, altKey: true, shiftKey: false, metaKey: false });
 
     Button("Run (F1)", interfaceWindow.contentElement, runCode, "Runs the code with json-data");
     Button("Download", interfaceWindow.contentElement, downloadJSON, "Downloads all items (code+json) together in a single json-file. You can upload that file by dragging it in here.");
@@ -215,7 +250,8 @@ export async function Main() {
             output.textContent = "Global variable parsing error: " + e.message;
             return;
         }
-        output.textContent = "";
+        const time = dateFormat(new Date(), hmsFormatter);
+        output.textContent = `Starting ${currentSelectedValue} at ${time}\n`;
         const code = codeEditor.getValue();
         const iframe = document.getElementById("sandbox");
         iframe.contentWindow.postMessage({ code, globals }, "*");
@@ -241,20 +277,6 @@ export async function Main() {
     });
 
 
-    function codesFromJSON(json) {
-        const newkeys = Object.keys(json);
-        for (const key of newkeys) {
-            const newobj = json[key];
-            if (typeof newobj.code === "string" && typeof newobj.globals === "string") {
-                if (codemap[key] === undefined) {
-                    addOption(key);
-                }
-                codemap[key] = newobj;
-                console.log("added", key, newobj)
-            }
-        }
-    }
-
     // Datei verarbeiten beim Drop
     document.addEventListener('drop', (e) => {
         const files = e.dataTransfer.files;
@@ -268,21 +290,14 @@ export async function Main() {
 
         const reader = new FileReader();
         reader.onload = function (event) {
-            try {
-                const json = JSON.parse(event.target.result);
-                codesFromJSON(json);
-            } catch (err) {
-                output.textContent += 'Fehler beim Lesen der Datei:\n' + err.message;
-            }
-            localStorage.setItem("codemap", JSON.stringify(codemap));
-
+            codeMapMgr.fromJSONstring(event.target.result);
         };
         reader.readAsText(file);
     });
 
     window.addEventListener("message", (event) => {
         if (event.data.type === "log") {
-            output.textContent += "log:" + event.data.data + "\n";
+            output.textContent += event.data.data + "\n";
         }
         if (event.data.type === "error") {
             output.textContent += "Error: " + event.data.data + "\n";
@@ -306,7 +321,7 @@ export async function Main() {
     try {
         const response = await fetch('/dist/default_codes.json');
         const default_codes = await response.json();
-        codesFromJSON(default_codes);
+        codeMapMgr.fromObject(default_codes);
     } catch (ex) {
         console.log(ex);
     }

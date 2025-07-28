@@ -1,3 +1,5 @@
+import { dateFormat, ymdhmsFileFormatter } from "./dateformat.mjs";
+
 export function CodeMap(boxAdd, boxClear, boxSelect) {
 
     const codemap = {};
@@ -12,14 +14,16 @@ export function CodeMap(boxAdd, boxClear, boxSelect) {
             boxAdd(k);
         }
 
-        if (ka.length > 0) {
-            const first = ka[0];
-            const { globals, code } = get(first);
-            boxSelect(0, code, globals);
-        }
+        // if (ka.length > 0) {
+        //     const first = ka[0];
+        //     const { globals, code } = get(first);
+        //     boxSelect(0, code, globals);
+        // }
     }
 
     function set(k, v) {
+        v.modified = dateFormat(new Date(), ymdhmsFileFormatter);
+        console.log("set", k, v.modified);
         codemap[k] = v;
     }
 
@@ -31,13 +35,22 @@ export function CodeMap(boxAdd, boxClear, boxSelect) {
         }
     }
 
+    function delItem(k) {
+        if (codemap[k]) {
+            delete codemap[k];
+            console.log("delItem", k, keysAsString());
+            save();
+        }
+    }
+
     function rename(oldId, newId) {
-        codemap[newId] = { globals: codemap[oldId].globals, code: codemap[oldId].code };
+        set(newId, { globals: codemap[oldId].globals, code: codemap[oldId].code });
         delete codemap[oldId];
     }
 
     function save() {
         localStorage.setItem("codemap", JSON.stringify(codemap));
+        refresh();
         return keysAsString();
     }
 
@@ -46,7 +59,9 @@ export function CodeMap(boxAdd, boxClear, boxSelect) {
     }
 
     function keysAsString() {
-        return Object.keys(codemap).join(" ");
+        const keys = Object.keys(codemap);
+        const info = keys.map(k => `(${k}: ${codemap[k].modified})`);
+        return info.join(" ");
     }
 
 
@@ -66,6 +81,9 @@ export function CodeMap(boxAdd, boxClear, boxSelect) {
         }
     }
 
+    function getJSON() {
+        return JSON.stringify(codemap, null, 2);
+    }
 
     function fromJSONstring(s) {
         try {
@@ -76,5 +94,5 @@ export function CodeMap(boxAdd, boxClear, boxSelect) {
         }
     }
 
-    return { set, get, save, rename, keysAsString, has, fromJSONstring, fromObject };
+    return { set, get, save, rename, keysAsString, has, fromJSONstring, fromObject, delItem, getJSON };
 }

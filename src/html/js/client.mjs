@@ -41,6 +41,7 @@ const uiID = "ui";
 
 export async function Main() {
 
+
     const addKey = keyboard();
 
     const windowManager = Windows();
@@ -89,11 +90,9 @@ export async function Main() {
     let currentSelectedValue;
     function selectItem(selected, code, globals) {
         output.textContent += `Selected: ${selected} \n`;
-        saveToLocalStorage();
         setCodeToWindows(selected, code, globals);
         currentSelectedValue = selected;
         setTitles(currentSelectedValue);
-
         if (selectBox.value !== currentSelectedValue) selectBox.value = currentSelectedValue;
     }
 
@@ -150,13 +149,17 @@ export async function Main() {
             }
         };
     }
-    // Doppelklick auf Select → Bearbeiten starten
-    selectBox.addEventListener('dblclick', function () {
+
+    function startEditingCurrentOption() {
         const index = selectBox.selectedIndex;
         if (index !== -1) {
             startEditingOption(index);
         }
-    });
+    }
+
+
+    // Doppelklick auf Select → Bearbeiten starten
+    selectBox.addEventListener('dblclick', startEditingCurrentOption);
 
     function addOption(key) {
         const option = document.createElement('option');
@@ -165,15 +168,21 @@ export async function Main() {
         selectBox.appendChild(option);
     }
 
-    function saveToLocalStorage() {
+    function saveToCodemap() {
         if (currentSelectedValue) {
             const globals = jsonEditor.getValue();
             const code = codeEditor.getValue();
             codeMapMgr.set(currentSelectedValue, { globals, code });
-            const keys = codeMapMgr.save();
-            output.textContent += `Saving: ${keys}\n`;
+        }
+        codeMapMgr.save();
+        if (currentSelectedValue) {
+            selectItem(currentSelectedValue);
         }
     }
+
+    // function saveToLocalStorage() {
+    //     codeMapMgr.save();
+    // }
 
 
     function setCodeToWindows(key, code, globals) {
@@ -200,7 +209,7 @@ export async function Main() {
         output.textContent += `Created: ${formatted} \n`;
     }
 
-    Button("Save", interfaceWindow.contentElement, saveToLocalStorage, "Saves all entries (code+json) to local storage in your browser");
+    Button("Save", interfaceWindow.contentElement, saveToCodemap, "Saves all entries (code+json) to local storage in your browser");
     Button("New", interfaceWindow.contentElement, newItem, "Creates a new entry (name: current date) with the actual code+json.");
 
 
@@ -209,26 +218,24 @@ export async function Main() {
         const key = selectBox.value;
         if (selectedIndex !== -1) {
             selectBox.remove(selectedIndex);
-            if (codemap[key] !== undefined) {
-                delete codemap[key];
-                const keys = Object.keys(codemap).join(", ");
-                output.textContent += `Deleted: ${key} remaining [${keys}]\n`;
-            }
+            codeMapMgr.delItem(key);
         }
     }, "Deletes current item (code+json)");
 
     addKey("F1", runCode);
+    addKey("F2", startEditingCurrentOption);
+
     for (let i = 0; i < 9; ++i) {
         addKey(`${i + 1}`, () => { selectItemByIndex(i) }, undefined, { ctrlKey: true, altKey: false, shiftKey: false, metaKey: false });
     }
-    addKey(`s`, saveToLocalStorage, undefined, { ctrlKey: false, altKey: true, shiftKey: false, metaKey: false });
+    addKey(`s`, saveToCodemap, undefined, { ctrlKey: false, altKey: true, shiftKey: false, metaKey: false });
     addKey(`n`, newItem, undefined, { ctrlKey: false, altKey: true, shiftKey: false, metaKey: false });
 
     Button("Run (F1)", interfaceWindow.contentElement, runCode, "Runs the code with json-data");
     Button("Download", interfaceWindow.contentElement, downloadJSON, "Downloads all items (code+json) together in a single json-file. You can upload that file by dragging it in here.");
 
     function downloadJSON() {
-        const jsonString = JSON.stringify(codemap, null, 2);
+        const jsonString = codeMapMgr.getJSON();
         const blob = new Blob([jsonString], { type: "application/json" });
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");

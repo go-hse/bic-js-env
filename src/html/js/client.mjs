@@ -3,6 +3,8 @@ import { keyboard } from "./keyboard.mjs";
 import { dateFormat, hmsFormatter, ymdhmsFileFormatter } from "./dateformat.mjs";
 import { Windows, dom, Button, removeOptions } from "./dom.mjs";
 import { CodeMap } from "./codemap.mjs";
+import { formatJavascript, formatJSON } from "./format.mjs";
+
 
 const default_script = `
 // Default
@@ -185,6 +187,21 @@ export async function Main() {
     // }
 
 
+    async function formatCurrentJavascript() {
+        const JS = codeEditor.getValue();
+        const formattedJS = await formatJavascript(JS);
+        codeEditor.setValue(formattedJS);
+        return formattedJS;
+    }
+
+    function formatCurrentJSON() {
+        const JS = jsonEditor.getValue();
+        const formattedJS = formatJSON(JS);
+        jsonEditor.setValue(formattedJS);
+        return formattedJS;
+    }
+
+
     function setCodeToWindows(key, code, globals) {
         if (code != undefined && globals !== undefined) {
             jsonEditor.setValue(globals);
@@ -248,10 +265,10 @@ export async function Main() {
         URL.revokeObjectURL(url);
     }
 
-    function runCode() {
+    async function runCode() {
         let globals = {};
         try {
-            const globalsRaw = jsonEditor.getValue();
+            const globalsRaw = formatCurrentJSON();
             globals = globalsRaw ? JSON.parse(globalsRaw) : {};
         } catch (e) {
             output.textContent = "Global variable parsing error: " + e.message;
@@ -259,7 +276,7 @@ export async function Main() {
         }
         const time = dateFormat(new Date(), hmsFormatter);
         output.textContent = `Starting ${currentSelectedValue} at ${time}\n`;
-        const code = codeEditor.getValue();
+        const code = await formatCurrentJavascript();
         const iframe = document.getElementById("sandbox");
         iframe.contentWindow.postMessage({ code, globals }, "*");
     };

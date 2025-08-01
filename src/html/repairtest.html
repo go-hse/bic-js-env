@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <title>jsonrepair UMD Test</title>
+</head>
+
+<body>
+    <h3>Ungültiges JSON reparieren</h3>
+    <textarea id="input" rows="6" cols="60">{name: "Alice", age: 25,}</textarea><br>
+    <button onclick="repair()">Reparieren</button>
+    <pre id="output"></pre>
+
+    <script src="https://cdn.jsdelivr.net/npm/jsonrepair@3.13.0/lib/umd/jsonrepair.js"></script>
+    <script>
+        function repair() {
+            const raw = document.getElementById("input").value;
+            try {
+                const repaired = JSONRepair.jsonrepair(raw);
+                document.getElementById("output").textContent = repaired;
+            } catch (err) {
+                document.getElementById("output").textContent = "Fehler: " + err.message;
+            }
+        }
+    </script>
+</body>
+
+</html>

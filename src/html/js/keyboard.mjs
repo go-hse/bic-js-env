@@ -25,8 +25,8 @@ export function keyboard() {
                     KeyObject.cbOnRelease();
                 }
             }
-        } else {
-            console.log(`unbekannt <${ev.key}>`);
+            // } else {
+            //     console.log(`unbekannt <${ev.key}>`);
         }
     }
 

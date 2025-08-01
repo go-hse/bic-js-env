@@ -1,6 +1,6 @@
-import * as prettier from "https://unpkg.com/prettier@3.6.2/standalone.mjs";
-import * as prettierPluginBabel from "https://unpkg.com/prettier@3.6.2/plugins/babel.mjs";
-import * as prettierPluginEstree from "https://unpkg.com/prettier@3.6.2/plugins/estree.mjs";
+import prettier from "/node_modules/prettier/standalone.mjs";
+import prettierPluginEstree from "/node_modules/prettier/plugins/estree.mjs";
+import prettierPluginBabel from "/node_modules/prettier/plugins/babel.mjs";
 
 export async function formatJavascript(text) {
     const formatted = await prettier.format(text, {

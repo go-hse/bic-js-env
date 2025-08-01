@@ -27,12 +27,18 @@
     "html-loader": "^5.1.0",
     "html-webpack-plugin": "^5.6.3",
     "mini-css-extract-plugin": "^2.9.2",
+    "prettier": "3.6.2",
     "raw-loader": "^4.0.2",
     "style-loader": "^4.0.0",
     "webpack": "^5.100.2",
     "webpack-cli": "^6.0.1"
   },
   "dependencies": {
+    "@codemirror/commands": "^6.8.1",
+    "@codemirror/lang-javascript": "^6.2.4",
+    "@codemirror/search": "^6.5.11",
+    "@codemirror/view": "^6.38.1",
+    "codemirror": "^6.0.2",
     "jsonrepair": "^3.13.0"
   }
 }

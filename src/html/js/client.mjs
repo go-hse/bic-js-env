@@ -4,7 +4,7 @@ import { dateFormat, hmsFormatter, ymdhmsFileFormatter } from "./dateformat.mjs"
 import { Windows, dom, Button, removeOptions } from "./dom.mjs";
 import { CodeMap } from "./codemap.mjs";
 import { formatJavascript, formatJSON } from "./format.mjs";
-
+import { Editor } from "./editor.mjs";
 
 const default_script = `
 // Default
@@ -36,14 +36,13 @@ const default_json = `
 }
 `;
 
+const editor6ID = "editor6";
 const editorID = "editor";
 const inputID = "json";
 const outputID = "output";
 const uiID = "ui";
 
 export async function Main() {
-
-
     const addKey = keyboard();
 
     const windowManager = Windows();
@@ -52,24 +51,10 @@ export async function Main() {
     const outputWindow = windowManager.create(outputID, document.body, { x: 802, y: 100, w: 200, h: 600 });
     const interfaceWindow = windowManager.create(uiID, document.body, { x: 802, y: 0, w: 200, h: 600 });
 
-
-    const codeEditor = CodeMirror(editorWindow.contentElement, {
-        value: default_script,
-        mode: "javascript",
-        lineNumbers: true
-    });
-
-    const jsonEditor = CodeMirror(jsonWindow.contentElement, {
-        value: default_json,
-        mode: "application/json",
-        lineNumbers: true,
-        lineWrapping: true
-    });
+    const codeEditor = Editor(editorWindow, default_script);
+    const jsonEditor = Editor(jsonWindow, default_json);
 
     const output = outputWindow.contentElement;
-
-
-    // SELECTBOX
 
 
     const editInput = dom("input", { type: "text", class: "select-input" });
@@ -248,6 +233,17 @@ export async function Main() {
     addKey(`s`, saveToCodemap, undefined, { ctrlKey: false, altKey: true, shiftKey: false, metaKey: false });
     addKey(`n`, newItem, undefined, { ctrlKey: false, altKey: true, shiftKey: false, metaKey: false });
 
+    addKey(`+`, increaseFont, undefined, { ctrlKey: true, altKey: false, shiftKey: false, metaKey: false });
+    addKey(`-`, decreaseFont, undefined, { ctrlKey: true, altKey: false, shiftKey: false, metaKey: false });
+
+    function increaseFont() {
+        codeEditor.fontUp();
+    }
+    function decreaseFont() {
+        codeEditor.fontDown();
+    }
+
+
     Button("Run (F1)", interfaceWindow.contentElement, runCode, "Runs the code with json-data");
     Button("Download", interfaceWindow.contentElement, downloadJSON, "Downloads all items (code+json) together in a single json-file. You can upload that file by dragging it in here.");
 
@@ -281,7 +277,7 @@ export async function Main() {
         iframe.contentWindow.postMessage({ code, globals }, "*");
     };
 
-    const overlay = dom("div");
+    const overlay = dom("div", { id: "overlay" });
     document.body.appendChild(overlay);
 
     ['dragenter', 'dragover'].forEach(eventName => {
@@ -343,11 +339,11 @@ export async function Main() {
     });
 
     try {
-        const response = await fetch('/dist/default_codes.json');
-        const default_codes = await response.json();
-        codeMapMgr.fromObject(default_codes);
+        const response = await fetch('default_codes.json');
+        const default_codes = await response.text();
+        codeMapMgr.fromJSONstring(default_codes);
     } catch (ex) {
-        console.log(ex);
+        console.log(ex, default_codes);
     }
 
 }

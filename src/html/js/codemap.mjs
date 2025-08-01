@@ -13,12 +13,6 @@ export function CodeMap(boxAdd, boxClear, boxSelect) {
         for (const k of ka) {
             boxAdd(k);
         }
-
-        // if (ka.length > 0) {
-        //     const first = ka[0];
-        //     const { globals, code } = get(first);
-        //     boxSelect(0, code, globals);
-        // }
     }
 
     function set(k, v) {

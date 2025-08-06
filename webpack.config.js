@@ -5,11 +5,23 @@ const HtmlInlineScriptPlugin = require('html-inline-script-webpack-plugin');
 const HtmlInlineCssPlugin = require('html-inline-css-webpack-plugin').default;
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
+
+const nm_path = path.resolve(__dirname, "node_modules");
+const src_path = path.resolve(__dirname, "src", "html");
+const entry = path.resolve(src_path, "index.js");
+
+console.log("\nRestart", new Date());
+
 module.exports = {
-    entry: './src/html/index.js',
+    entry,
     output: {
         path: path.resolve(__dirname, 'dist'),
         clean: true,
+    },
+    resolve: {
+        alias: {
+            "PrettierPlugins": path.resolve(nm_path, "prettier", "plugins")
+        }
     },
     module: {
         rules: [
@@ -27,15 +39,22 @@ module.exports = {
             },
         ],
     },
+    devtool: "source-map",
     plugins: [
         new HtmlWebpackPlugin({
-            template: './src/html/index.html',
+            template: './src/html/template.html',
+            title: 'JavaScript Editor',
+            favicon: './src/html/img/favicon.ico',
             inject: 'body',
+            minify: true
         }),
         new MiniCssExtractPlugin({
             filename: 'styles.css',
         }),
         new HtmlInlineCssPlugin(),
         new HtmlInlineScriptPlugin(),
-    ]
+    ],
+    optimization: {
+        runtimeChunk: true
+    }
 };

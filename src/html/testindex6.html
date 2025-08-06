@@ -4,32 +4,41 @@
 <head>
     <meta charset="UTF-8">
     <title>JavaScript Trainer</title>
-    <link rel="icon" href="img/icon-192x192.png" sizes="192x192" type="image/png">
-    <link rel="apple-touch-icon" href="img/apple-touch-icon.png" sizes="180x180" type="image/png">
-    <link rel="icon" href="img/icon-48x48.png" sizes="48x48" type="image/png">
     <link rel="icon" href="img/favicon.ico" sizes="any">
-    <link rel="icon" type="image/x-icon" href="/src/html/img/favicon.ico">
-    <link rel="icon" href="img/icon-16x16.png" sizes="16x16" type="image/png">
-
-    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/codemirror.min.css"
-        integrity="sha512-uf06llspW44/LZpHzHT6qBOIVODjWtv4MxCricRxkzvopAlSWnTf6hpZTFxuuZcuNE9CBQhqE0Seu1CoRk84nQ=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/codemirror.min.js"
-        integrity="sha512-8RnEqURPUc5aqFEN04aQEiPlSAdE0jlFS/9iGgUyNtwFnSKCXhmB6ZTNl7LnDtDWKabJIASzXrzD0K+LYexU9g=="
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/mode/javascript/javascript.min.js"
-        integrity="sha512-I6CdJdruzGtvDyvdO4YsiAq+pkWf2efgd1ZUSK2FnM/u2VuRASPC7GowWQrWyjxCZn6CT89s3ddGI+be0Ak9Fg=="
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
-
-    <script src="./lib/cm6.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/formulajs/formulajs@2.9.3/dist/formula.min.js"></script>
     <link rel="stylesheet" href="css/style.css">
+    <script type="importmap">
+{
+  "imports": {
+    "prettier": "/node_modules/prettier/standalone.mjs",
+    "PrettierPlugins/estree.mjs": "/node_modules/prettier/plugins/estree.mjs",
+    "PrettierPlugins/babel.mjs": "/node_modules/prettier/plugins/babel.mjs",
+    "jsonrepair": "/node_modules/jsonrepair/lib/esm/index.js",
+    "@codemirror/lang-javascript": "/node_modules/@codemirror/lang-javascript/dist/index.js",
+    "@codemirror/language": "/node_modules/@codemirror/language/dist/index.js",
+    "@codemirror/state": "/node_modules/@codemirror/state/dist/index.js",
+    "@codemirror/commands": "/node_modules/@codemirror/commands/dist/index.js",
+    "@codemirror/search": "/node_modules/@codemirror/search/dist/index.js",
+    "@codemirror/lint": "/node_modules/@codemirror/lint/dist/index.js",
+    "@codemirror/view": "/node_modules/@codemirror/view/dist/index.js",
+    "@codemirror/autocomplete": "/node_modules/@codemirror/autocomplete/dist/index.js",
+    "@formulajs/formulajs" : "/node_modules/@formulajs/formulajs/lib/browser/formula.min.js",
+    "codemirror": "/node_modules/codemirror/dist/index.js",
+    "style-mod": "/node_modules/style-mod/src/style-mod.js",
+    "w3c-keyname": "/node_modules/w3c-keyname/index.js",
+    "crelt": "/node_modules/crelt/index.js",
+    "@marijn/find-cluster-break": "/node_modules/@marijn/find-cluster-break/src/index.js",
+    "@lezer/javascript": "/node_modules/@lezer/javascript/dist/index.js",
+    "@lezer/lr": "/node_modules/@lezer/lr/dist/index.js",
+    "@lezer/highlight": "/node_modules/@lezer/highlight/dist/index.js",
+    "@lezer/common": "/node_modules/@lezer/common/dist/index.js"
+  }
+}
+</script>
 
-    <script src="https://cdn.jsdelivr.net/npm/jsonrepair@3.13.0/lib/umd/jsonrepair.js"></script>
 </head>
 
 <body>
+
     <script type="module" src="testindex.mjs"></script>
 </body>
 

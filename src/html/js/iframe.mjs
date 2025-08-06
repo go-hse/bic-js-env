@@ -1,4 +1,6 @@
 
+import * as formulajs from "@formulajs/formulajs"
+
 export function iframe() {
     const iframeEle = document.createElement(`iframe`);
     iframeEle.setAttribute("id", "sandbox");

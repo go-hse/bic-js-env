@@ -4,8 +4,8 @@
   "description": "[Live](https://go-hse.github.io/bic-js-env/src/html/index.html)",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack webpack --mode production",
+    "build": "webpack --mode production --watch",
+    "wbs": "webpack --config webpack_simple.config.js --mode development --watch",
     "webpack": "webpack --mode development --watch"
   },
   "repository": {
@@ -38,6 +38,7 @@
     "@codemirror/lang-javascript": "^6.2.4",
     "@codemirror/search": "^6.5.11",
     "@codemirror/view": "^6.38.1",
+    "@formulajs/formulajs": "^4.5.3",
     "codemirror": "^6.0.2",
     "jsonrepair": "^3.13.0"
   }

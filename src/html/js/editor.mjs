@@ -1,7 +1,15 @@
+import { javascript } from "@codemirror/lang-javascript"
+import { EditorView, basicSetup } from "codemirror"
 
-export function Editor(win, initialText) {
-    const initialState = cm6.createEditorState(initialText);
-    const view = cm6.createEditorView(initialState, win.contentElement);
+export function Editor(parent, doc, options = {}) {
+    const view = new EditorView({
+        doc: "console.log('Test', new Date()); \n",
+        parent: parent,
+        extensions: [
+            basicSetup,
+            javascript()
+        ]
+    });
 
     let fontSize = 14;
     view.dom.style.fontSize = `${fontSize}px`;
@@ -32,3 +40,12 @@ export function Editor(win, initialText) {
 
     return { setValue, getValue, fontDown, fontUp };
 }
+
+export function MiniEditor(parent) {
+    const view = new EditorView({
+        extensions,
+        parent
+    });
+    return view;
+}
+

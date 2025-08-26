@@ -5,10 +5,18 @@ import prettierPluginBabel from "PrettierPlugins/babel.mjs";
 import { jsonrepair } from 'jsonrepair'
 
 export async function formatJavascript(text) {
-    const formatted = await prettier.format(text, {
-        parser: "babel",
-        plugins: [prettierPluginEstree, prettierPluginBabel],
-    });
+
+    try {
+        const formatted = await prettier.format(text, {
+            parser: "babel",
+            plugins: [prettierPluginEstree, prettierPluginBabel],
+        });
+        return formatted;
+    } catch (err) {
+        // return original text with errors; will be catched
+        return text;
+    }
+
 
     return formatted;
 }

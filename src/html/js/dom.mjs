@@ -1,3 +1,5 @@
+import { compiled_date } from "./compiled.mjs"
+
 export function dom(tag, attributes = {}, ...children) {
     const namespace = attributes.namespace || "http://www.w3.org/1999/xhtml";
     const node = document.createElementNS(namespace, tag);
@@ -39,6 +41,11 @@ export function Button(text, parent, callback, explanation = "") {
     parent.appendChild(buttonElement);
 }
 
+export function Info(parent) {
+    const infoObj = compiled_date();
+    const InfoElement = dom("div", { class: "info" }, `Compiled ${infoObj.COMPILED}`);
+    parent.appendChild(InfoElement);
+}
 
 export function removeAllChildren(ele) {
     while (ele.firstChild) {

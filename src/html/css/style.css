@@ -135,6 +135,11 @@ button {
 }
 
 .info {
+    padding: 10px;
+    font-size: 1.5em;
+}
+
+.info {
     font-size: 12px;
 }
 

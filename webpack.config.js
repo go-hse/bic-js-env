@@ -4,6 +4,7 @@ const HtmlInlineScriptPlugin = require('html-inline-script-webpack-plugin');
 
 const HtmlInlineCssPlugin = require('html-inline-css-webpack-plugin').default;
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const DateLoader = require('./src/build/date.mjs');
 
 
 const nm_path = path.resolve(__dirname, "node_modules");
@@ -36,7 +37,7 @@ module.exports = {
                 test: /\.html$/i,
                 include: path.resolve(__dirname, 'src'),
                 use: 'raw-loader',
-            },
+            }
         ],
     },
     devtool: "source-map",

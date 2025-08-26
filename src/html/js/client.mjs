@@ -1,7 +1,7 @@
 
 import { keyboard } from "./keyboard.mjs";
 import { dateFormat, hmsFormatter, ymdhmsFileFormatter } from "./dateformat.mjs";
-import { Windows, dom, Button, removeOptions } from "./dom.mjs";
+import { Windows, dom, Button, removeOptions, Info } from "./dom.mjs";
 import { CodeMap } from "./codemap.mjs";
 import { formatJavascript, formatJSON } from "./format.mjs";
 import { Editor } from "./editor.mjs";
@@ -226,6 +226,7 @@ export async function Main() {
 
     addKey("F1", runCode);
     addKey("F2", startEditingCurrentOption);
+    addKey("F5", runCode);
 
     for (let i = 0; i < 9; ++i) {
         addKey(`${i + 1}`, () => { selectItemByIndex(i) }, undefined, { ctrlKey: true, altKey: false, shiftKey: false, metaKey: false });
@@ -238,14 +239,18 @@ export async function Main() {
 
     function increaseFont() {
         codeEditor.fontUp();
+        jsonEditor.fontUp();
     }
     function decreaseFont() {
         codeEditor.fontDown();
+        jsonEditor.fontDown();
     }
 
 
     Button("Run (F1)", interfaceWindow.contentElement, runCode, "Runs the code with json-data");
     Button("Download", interfaceWindow.contentElement, downloadJSON, "Downloads all items (code+json) together in a single json-file. You can upload that file by dragging it in here.");
+
+    Info(interfaceWindow.contentElement);
 
     function downloadJSON() {
         const jsonString = codeMapMgr.getJSON();
@@ -262,6 +267,8 @@ export async function Main() {
     }
 
     async function runCode() {
+        saveToCodemap();
+
         let globals = {};
         try {
             const globalsRaw = formatCurrentJSON();

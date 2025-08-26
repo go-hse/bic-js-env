@@ -17,4 +17,7 @@ const output = {
     test_name
 }
 
+let zahl = 42, name = "Hochschule Esslingen";
+let wahr = true;
+
 output;

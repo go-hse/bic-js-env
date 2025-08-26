@@ -4,7 +4,8 @@
   "description": "[Live](https://go-hse.github.io/bic-js-env/src/html/index.html)",
   "main": "index.js",
   "scripts": {
-    "build": "webpack --mode production --watch",
+    "date": "node src/build/date.mjs",
+    "build": "node ./src/build/date.mjs && webpack --mode production",
     "wbs": "webpack --config webpack_simple.config.js --mode development --watch",
     "webpack": "webpack --mode development --watch"
   },

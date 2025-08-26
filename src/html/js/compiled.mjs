@@ -1,0 +1,1 @@
+export function compiled_date() {return {COMPILED: "26.8.2025, 15:26:22"};}

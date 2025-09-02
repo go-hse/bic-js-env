@@ -36,7 +36,6 @@ const default_json = `
 }
 `;
 
-const editor6ID = "editor6";
 const editorID = "editor";
 const inputID = "json";
 const outputID = "output";

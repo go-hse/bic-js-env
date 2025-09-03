@@ -1,5 +1,31 @@
-import { javascript } from "@codemirror/lang-javascript"
 import { EditorView, basicSetup } from "codemirror"
+import { javascript, esLint } from "@codemirror/lang-javascript";
+import { linter, lintGutter } from "@codemirror/lint";
+import { globals } from "globals";
+
+import * as browserESlint from "eslint-linter-browserify";
+
+const linterConfig = {
+    // eslint configuration
+    languageOptions: {
+        globals: {
+            ...globals.browser,
+        },
+        parserOptions: {
+            ecmaVersion: 6,
+            sourceType: "module",
+        },
+    },
+    rules: {
+        "semi-style": ["error", "last"],
+        "no-unused-vars": "warn"
+    }
+};
+
+const cmLinterConfig = {
+    autoPanel: true
+}
+
 
 export function Editor(parent, doc, options = {}) {
     const view = new EditorView({
@@ -7,7 +33,9 @@ export function Editor(parent, doc, options = {}) {
         parent: parent,
         extensions: [
             basicSetup,
-            javascript()
+            javascript(),
+            lintGutter(),
+            linter(esLint(new browserESlint.Linter(), linterConfig), cmLinterConfig),
         ]
     });
 

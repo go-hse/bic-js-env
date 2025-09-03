@@ -326,7 +326,8 @@ export async function Main() {
             output.textContent += event.data.data + "\n";
         }
         if (event.data.type === "error") {
-            output.textContent += "Error: " + event.data.data + "\n";
+            const err = event.data.data;
+            output.textContent += `Error in Line ${err.lineNo} (${err.snippet}): ${err.message}\n`;
         }
         if (event.data.type === "result") {
             output.textContent += "output: " + event.data.data + "\n";

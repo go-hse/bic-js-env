@@ -69,6 +69,7 @@ export function CodeMap(boxAdd, boxClear, boxSelect) {
                     console.log("added", key, newobj)
                 }
             }
+            refresh();
             return keysAsString();
         } catch (err) {
             console.log(err.message, "string", s);

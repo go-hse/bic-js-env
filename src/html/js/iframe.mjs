@@ -1,25 +1,13 @@
 
-import * as formulajs from "@formulajs/formulajs"
 
-function wrap(code) {
-    return `
-    try {
-        ${code}
-    } catch(ex) {
-       console.log("wrapped", ex);
-    }
-    `;
-
-}
-
-export function iframe() {
+export function iframe(importedFormulaJS) {
     const iframeEle = document.createElement(`iframe`);
     iframeEle.setAttribute("id", "sandbox");
     iframeEle.setAttribute("sandbox", "allow-same-origin allow-scripts allow-popups allow-forms");
 
 
     iframeEle.onload = function (ele) {
-        const localDocument = iframeEle.contentWindow.document;
+        //  const localDocument = iframeEle.contentWindow.document;
 
         // function runCode(code) {
         //     const jsEle = localDocument.createElement('script');
@@ -30,13 +18,17 @@ export function iframe() {
 
 
         function safeEvalInScope(code, contextAsScope, name = "code.js") {
-            const wrappedCode = code + `\n//# sourceURL=${name}`;
             try {
-                // Erzeuge Funktion mit eval im Scope
-                const fn = new Function(
-                    `with (this) { return eval(${JSON.stringify(wrappedCode)}); }`
-                );
-                return { result: fn.call(contextAsScope), error: null };
+                const keys = Object.keys(contextAsScope);
+                const wrappedCode = `${code}\n//# sourceURL=${name}`;
+                // console.log("call", code, contextAsScope);
+                return { result: new Function(`with (this) { return eval(${JSON.stringify(wrappedCode)}); }`).call(contextAsScope), error: null };
+
+                // // Erzeuge Funktion mit eval im Scope
+                // const fn = new Function(
+                //     `with (this) { return eval(${JSON.stringify(wrappedCode)}); }`
+                // );
+                // return { result: fn.call(contextAsScope), error: null };
             } catch (e) {
                 let line = null, col = null, file = name;
                 let snippet = null;
@@ -92,7 +84,21 @@ export function iframe() {
         // console.log(`myframe is loaded`, ele);
 
         const context = { console };
-        Object.assign(context, formulajs);
+
+        try {
+            Object.assign(context, formulajs);
+            console.log("formulaJS OK");
+        } catch (ex) {
+            console.log("formulaJS assign failed", ex.message);
+            try {
+                let formulajs = importedFormulaJS;
+                Object.assign(context, formulajs);
+                console.log("formulaJS OK, 2nd");
+            } catch (ex) {
+                console.log("importedFormulaJS assign failed", ex.message);
+            }
+        }
+
 
         // evalInScope(`for(let i=0; i<3; ++i) console.log(i);`, context);
 

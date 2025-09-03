@@ -12,7 +12,7 @@ const linterConfig = {
             ...globals.browser,
         },
         parserOptions: {
-            ecmaVersion: 6,
+            ecmaVersion: "latest",
             sourceType: "module",
         },
     },

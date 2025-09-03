@@ -66,7 +66,7 @@ export function CodeMap(boxAdd, boxClear, boxSelect) {
                 const newobj = json[key];
                 if (typeof newobj.code === "string" && typeof newobj.globals === "string") {
                     codemap[key] = newobj;
-                    console.log("added", key, newobj)
+                    // console.log("added", key, newobj)
                 }
             }
             refresh();

@@ -1,4 +1,29 @@
 {
+    "00_Empty": {
+        "globals": "{}",
+        "code": "console.log(\"\");\nconsole.log(\"Hallo\");\nconsole.log(\"Hallo\");\nconsole.log(\"Hallo\");\nconsole.log(\"Hallo\");\n",
+        "modified": "2025.09.03_14.03.58"
+    },
+    "01_Simple": {
+        "globals": "{\n  \"x\": 5, \n  \"name\": \"Anna\"\n}",
+        "code": "// Simple\n\nconst output = {\n    x: \"Test\",\n    d: new Date().toString()\n}\noutput;\n",
+        "modified": "2025.09.03_13.21.38"
+    },
+    "80_URL-Parameters": {
+        "globals": "\n{\n  \"_case\": {\n    \"creationDate\": \"2025-07-17T16:08:20.994+00:00\",\n    \"creator\": {\n    \t\"email\": \"andreas.roessler@hs-esslingen.de\",\n        \"name\": \"Rößler, Andreas\", \n        \"type\": \"user\" \n    },\n    \"url\": \"https://hs-esslingen.de//start-form/N4Ig?a=1&b=2&c=3\",\n    \"owner\": {\n    \t\"email\": \"andreas.roessler@hs-esslingen.de\",\n        \"name\": \"Rößler, Andreas\", \n        \"type\": \"user\"\n    },\n    \"name\": \"Script_1752768500090\"\n  },\n  \"other\": \"Hello World\"\n}\n",
+        "code": "function getURL_Parameters(url) {\n    let para = \"\", split = [], kv = {};\n    if (url.includes(\"?\")) {\n        para = _case.url.split(\"?\")[1];\n        split = para.split(\"&\");\n\n        for (const part of split) {\n            const [key, value] = part.split(\"=\");\n            kv[key] = value;\n        }\n    }\n    return kv;\n}\n\nfunction objToString(o) {\n  \tlet r = \"\";\n\tfor (const [key, value] of Object.entries(o)) {\n      r += `${key}: ${value}; `;\n\t  console.log(key, r);\n    }\n  \treturn r;\n}\n\nconst url_para = getURL_Parameters(_case.url);\nconst url_para_string = objToString(url_para);\n\nconst output = {\n    url_para,\n    url_para_string\n}\noutput;\n",
+        "modified": "2025.07.29_07.49.08"
+    },
+    "10_BIC-Variables": {
+        "globals": "\n{\n  \"_case\": {\n    \"creationDate\": \"2025-07-17T16:08:20.994+00:00\",\n    \"creator\": {\n    \t\"email\": \"andreas.roessler@hs-esslingen.de\",\n        \"name\": \"Rößler, Andreas\", \n        \"type\": \"user\" \n    },\n    \"owner\": {\n    \t\"email\": \"andreas.roessler@hs-esslingen.de\",\n        \"name\": \"Rößler, Andreas\", \n        \"type\": \"user\"\n    },\n    \"name\": \"Script_1752768500090\"\n  },\n  \"other\": \"Hello World\",\n  \"help\": \"kein Komma vor }\"\n}\n",
+        "code": "let family_name = \"Max\";\nlet given_name = \"Mustermann\";\n\nif (_case && _case.creator && _case.creator.name && _case.creator.name !== \"WEB FORM\") {\n    const name_split = _case.creator.name.split(\", \");\n    family_name = name_split[0];\n    given_name = name_split[1];\n}\n\nconst output = {\n    d: new Date().toString(),\n    family_name, given_name\n}\noutput;\n",
+        "modified": "2025.07.28_18.07.18"
+    },
+    "50_FormulaJS": {
+        "globals": "{\n  \"_case\": {\n    \"creationDate\": \"2025-07-17T16:08:20.994+00:00\",\n    \"creator\": {\n      \"email\": \"andreas.roessler@hs-esslingen.de\",\n      \"name\": \"Rößler, Andreas\",\n      \"type\": \"user\"\n    },\n    \"owner\": {\n      \"email\": \"andreas.roessler@hs-esslingen.de\",\n      \"name\": \"Rößler, Andreas\",\n      \"type\": \"user\"\n    },\n    \"name\": \"Script_1752768500090\"\n  },\n  \"other\": \"Hello World\",\n  \"help\": \"kein Komma vor }\"\n}",
+        "code": "const ymdhmsFormatter = (yyyy, mm, dd, hh, mi, sc) =>\n  `${yyyy}-${mm}-${dd} ${hh}:${mi}:${sc}`;\nconst wdmyFormatter = (yyyy, mm, dd, hh, mi, sc, wd) =>\n  `${wd}, ${dd}.${mm}.${yyyy}`;\n\nconst WD = [\"So.\", \"Mo.\", \"Di.\", \"Mi.\", \"Do.\", \"Fr.\", \"Sa.\"];\n\nfunction dateFormat(d = new Date(), formatter = ymdhmsFormatter) {\n  const yyyy = d.getFullYear().toString();\n  const mm = (d.getMonth() + 1).toString().padStart(2, \"0\");\n  const dd = d.getDate().toString().padStart(2, \"0\");\n  const hh = d.getHours().toString().padStart(2, \"0\");\n  const mi = d.getMinutes().toString().padStart(2, \"0\");\n  const sc = d.getSeconds().toString().padStart(2, \"0\");\n  const wd = d.getDay();\n  return formatter(yyyy, mm, dd, hh, mi, sc, WD[wd]);\n}\n\nconst today = TODAY(); // FormulaJS\nconst now = new Date();\n\nconst oneDayInMs = 24 * 60 * 60 * 1000;\nconst daysToAdd = 90;\nconst addedDays = new Date(now.getTime() + daysToAdd * oneDayInMs);\n\nconst workday = WORKDAY(today, 90); // FormulaJS\n\nconst output = {\n  today,\n  addedDays,\n  workday,\n  ymdhms: dateFormat(now, ymdhmsFormatter),\n  wymdhms: dateFormat(now, wdmyFormatter),\n  awymdhms: dateFormat(addedDays, wdmyFormatter),\n};\noutput;\n",
+        "modified": "2025.09.03_15.25.51"
+    },
     "01_Zuweisung": {
         "globals": "{\n  \"x\": 5,\n  \"name\": \"Anna\"\n}",
         "code": "let die_antwort_auf_alles = 43;\nlet leere_variable;\n\n\n\nconsole.log(\"Die Antwort\", die_antwort_auf_alles);\nconsole.log(\"Leere Variable\", leere_variable);\n",
@@ -67,7 +92,7 @@
     "90_BIC_PE_Data": {
         "globals": "{\n  \"_case\": {\n    \"creationDate\": \"2025-07-17T16:08:20.994+00:00\",\n    \"creator\": {\n      \"email\": \"andreas.roessler@hs-esslingen.de\",\n      \"name\": \"Rößler, Andreas\",\n      \"type\": \"user\"\n    },\n    \"owner\": {\n      \"email\": \"andreas.roessler@hs-esslingen.de\",\n      \"name\": \"Rößler, Andreas\"\n      \"type\": \"user\"\n    },\n    \"name\": \"Script_1752768500090\",\n    \"url\": \"https://hs-esslingen.processdesign.bitbw.bicplatform.de/process-execution/studio/processes/b65c4d45871f3c42ffc77aa97ac6a633b96c78c69c4db7d02b5a514dc622e562/instances/39950567-7f09-4446-8e90-75c5c62f6df8/flow\"\n  },\n  \"other\": \"Hello World\"\n}",
         "code": "const creationDate = new Date(Date.parse(_case.creationDate));\nconst localDate = creationDate.toLocaleString();\n\nconsole.log(\"creator:\", _case.creator.name);\n\nconst output = {\n  other,\n  localDate,\n};\noutput;\n",
-        "modified": "2025.09.02_11.39.37"
+        "modified": "2025.09.03_15.26.38"
     },
     "21_Operatoren": {
         "globals": "{\n  \"x\": 5,\n  \"name\": \"Anna\"\n}",
@@ -93,5 +118,15 @@
         "globals": "{\n  \"x\": 5,\n  \"name\": \"Anna\"\n}",
         "code": "cnst zahl = 1;\nconst zahl = 1,1;\nconst text = 'ABC;\n\n/ ein Kommentar\n\nconsole.log(text zahl);\nconsole.log(text, zahl;\n\n",
         "modified": "2025.09.02_12.08.30"
+    },
+    "70_RegEx": {
+        "globals": "{\n  \"_case\": {\n    \"creationDate\": \"2025-07-17T16:08:20.994+00:00\",\n    \"creator\": {\n      \"email\": \"andreas.roessler@hs-esslingen.de\",\n      \"name\": \"Rößler, Andreas\",\n      \"type\": \"user\"\n    },\n    \"url\": \"https://hs-esslingen.de//start-form/N4Ig?a=1&b=2&c=3\",\n    \"owner\": {\n      \"email\": \"andreas.roessler@hs-esslingen.de\",\n      \"name\": \"Rößler, Andreas\",\n      \"type\": \"user\"\n    },\n    \"name\": \"Script_1752768500090\"\n  },\n  \"other\": \"Hello World\"\n}",
+        "code": "function parseDate(str) {\n  const m = str.match(/^(\\d{1,2})\\/(\\d{1,2})\\/(\\d{4})$/);\n  return m ? new Date(m[3], m[2] - 1, m[1]) : null;\n}\n\nconst validdates = [\"24/12/2015\", \"7/8/1975\"];\n\nconst output = { dates: [] };\nfor (const vd of validdates) {\n  const d = parseDate(vd);\n  if (d) {\n    output.dates.push(d.toLocaleString());\n  }\n}\n\nfunction parseEmail(email) {\n  const regex = /^([\\w.+-]+)@([\\w-]+)(\\.[\\w.-]+)+$/;\n  const match = email.match(regex);\n  if (!match) return null;\n  const local = match[1];\n  const domainParts = (match[2] + match[3]).split(\".\");\n  const tld = domainParts.slice(1).join(\".\");\n  const domain = domainParts[0];\n  return { local, domain, tld };\n}\nconst parts = parseEmail(_case.creator.email);\nconst merged = { ...output, ...parts };\n\nmerged;\n",
+        "modified": "2025.09.03_13.55.45"
+    },
+    "71_RegEX_2": {
+        "globals": "{\n  \"_case\": {\n    \"creationDate\": \"2025-07-17T16:08:20.994+00:00\",\n    \"creator\": {\n      \"email\": \"andreas.roessler@hs-esslingen.de\",\n      \"name\": \"Rößler, Andreas\",\n      \"type\": \"user\"\n    },\n    \"url\": \"https://hs-esslingen.de//start-form/N4Ig?a=1&b=2&c=3\",\n    \"owner\": {\n      \"email\": \"andreas.roessler@hs-esslingen.de\",\n      \"name\": \"Rößler, Andreas\",\n      \"type\": \"user\"\n    },\n    \"name\": \"Script_1752768500090\"\n  },\n  \"other\": \"Hello World\"\n}",
+        "code": "// === 1. Einfaches Testen eines Musters ===\nconst email = \"max.mustermann@example.com\";\nconst emailRegex = /^[\\w.+-]+@[\\w-]+\\.[\\w.-]+$/;\nconsole.log(\"1. Email valid:\", emailRegex.test(email));\n// true, überprüft nur grob die Form\n\n// === 2. Matching und Gruppen ===\nconst phone = \"Telefon: +49-171-1234567\";\nconst phoneRegex = /\\+(\\d{2})-(\\d{3})-(\\d{7})/;\nconst phoneMatch = phone.match(phoneRegex);\nif (phoneMatch) {\n  console.log(\"2. Phone Match Groups:\", phoneMatch.slice(1));\n  // ['49', '171', '1234567']\n}\n\n// === 3. Globale Suche ===\nconst text = \"Ich habe 3 Äpfel, 5 Birnen und 12 Bananen.\";\nconst numbers = text.match(/\\d+/g);\nconsole.log(\"3. All numbers in text:\", numbers);\n// ['3', '5', '12']\n\n// === 4. Ersetzen mit Regex ===\nconst messy = \"JavaScript ist  großartig!\";\nconst clean = messy.replace(/\\s+/g, \" \").trim();\nconsole.log(\"4. Cleaned text:\", clean);\n// \"JavaScript ist großartig!\"\n\n// === 5. Lookahead / Lookbehind (fortgeschritten) ===\nconst password = \"Abc123!\";\nconst strongRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[!@#$%^&*])/;\nconsole.log(\"5. Strong password:\", strongRegex.test(password));\n// true, mindestens 1 Großbuchstabe, 1 Kleinbuchstabe, 1 Zahl, 1 Sonderzeichen\n\n// === 6. Case-insensitive / Multiline Flags ===\nconst multiline = \"Zeile1\\nZeile2\\nzeile3\";\nconst lineRegex = /^zeile/gim;\nconst matches = multiline.match(lineRegex);\nconsole.log(\"6. Lines matching 'zeile':\", matches);\n",
+        "modified": "2025.09.03_13.56.01"
     }
 }

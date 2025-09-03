@@ -40,6 +40,7 @@ const editorID = "editor";
 const inputID = "json";
 const outputID = "output";
 const uiID = "ui";
+const selectID = "select";
 
 export async function Main() {
     const addKey = keyboard();
@@ -49,18 +50,19 @@ export async function Main() {
     const jsonWindow = windowManager.create(inputID, document.body, { x: 401, y: 0, w: 400, h: 600 });
     const outputWindow = windowManager.create(outputID, document.body, { x: 802, y: 100, w: 200, h: 600 });
     const interfaceWindow = windowManager.create(uiID, document.body, { x: 802, y: 0, w: 200, h: 600 });
+    const selectWindow = windowManager.create(selectID, document.body, { x: 802, y: 0, w: 200, h: 600 });
+    windowManager.setTitle(uiID, "Commands");
 
     const codeEditor = Editor(editorWindow.contentElement, true);
     const jsonEditor = Editor(jsonWindow.contentElement, false);
 
     const output = outputWindow.contentElement;
 
-
     const editInput = dom("input", { type: "text", class: "select-input" });
-    const selectBox = dom("select", { size: "5" });
+    const selectBox = dom("select", { size: "50" });
 
-    interfaceWindow.contentElement.appendChild(selectBox);
-    interfaceWindow.contentElement.appendChild(editInput);
+    selectWindow.contentElement.appendChild(selectBox);
+    selectWindow.contentElement.appendChild(editInput);
 
     document.addEventListener('click', function (e) {
         if (e.target !== editInput && e.target !== selectBox) {
@@ -75,7 +77,7 @@ export async function Main() {
 
     let currentSelectedValue;
     function selectItem(selected, code, globals) {
-        output.textContent += `Selected: ${selected} \n`;
+        output.textContent = "";
         setCodeToWindows(selected, code, globals);
         currentSelectedValue = selected;
         setTitles(currentSelectedValue);
@@ -92,13 +94,13 @@ export async function Main() {
     const codeMapMgr = CodeMap((k) => addOption(k), () => removeOptions(selectBox), selectItemByIndex);
 
 
-    const titleRectHeight = interfaceWindow.titleElement.getBoundingClientRect().height;
+    const titleRectHeight = selectWindow.titleElement.getBoundingClientRect().height;
 
     function setTitles(title) {
         windowManager.setTitle(editorID, `JS ${title}`);
         windowManager.setTitle(outputID, `Output from ${title}`);
         windowManager.setTitle(inputID, `Input for ${title}`);
-        windowManager.setTitle(uiID, `Selected ${title}`);
+        windowManager.setTitle(selectID, title);
     }
 
     function startEditingOption(optionIndex) {
@@ -267,7 +269,7 @@ export async function Main() {
 
     async function runCode() {
         saveToCodemap();
-
+        output.textContent = "";
         let globals = {};
         try {
             const globalsRaw = formatCurrentJSON();
@@ -277,7 +279,7 @@ export async function Main() {
             return;
         }
         const time = dateFormat(new Date(), hmsFormatter);
-        output.textContent = `Starting ${currentSelectedValue} at ${time}\n`;
+        windowManager.setTitle(outputID, `Output of ${currentSelectedValue} at ${time}\n`);
         const code = await formatCurrentJavascript();
         const iframe = document.getElementById("sandbox");
         iframe.contentWindow.postMessage({ code, globals }, "*");
@@ -327,7 +329,7 @@ export async function Main() {
         }
         if (event.data.type === "error") {
             const err = event.data.data;
-            output.textContent += `Error in Line ${err.lineNo} (${err.snippet}): ${err.message}\n`;
+            output.textContent += `Error in Line ${err.line}: <${err.snippet}>\n${err.message}\n`;
         }
         if (event.data.type === "result") {
             output.textContent += "output: " + event.data.data + "\n";

@@ -27,16 +27,16 @@ const cmLinterConfig = {
 }
 
 
-export function Editor(parent, doc, options = {}) {
+export function Editor(parent, useLinter = false) {
+    const extensions = [basicSetup, javascript()];
+    if (useLinter) {
+        extensions.push(lintGutter(), linter(esLint(new browserESlint.Linter(), linterConfig), cmLinterConfig));
+    }
+
     const view = new EditorView({
         doc: "console.log('Test', new Date()); \n",
         parent: parent,
-        extensions: [
-            basicSetup,
-            javascript(),
-            lintGutter(),
-            linter(esLint(new browserESlint.Linter(), linterConfig), cmLinterConfig),
-        ]
+        extensions
     });
 
     let fontSize = 14;

@@ -50,8 +50,8 @@ export async function Main() {
     const outputWindow = windowManager.create(outputID, document.body, { x: 802, y: 100, w: 200, h: 600 });
     const interfaceWindow = windowManager.create(uiID, document.body, { x: 802, y: 0, w: 200, h: 600 });
 
-    const codeEditor = Editor(editorWindow.contentElement, default_script);
-    const jsonEditor = Editor(jsonWindow.contentElement, default_json);
+    const codeEditor = Editor(editorWindow.contentElement, true);
+    const jsonEditor = Editor(jsonWindow.contentElement, false);
 
     const output = outputWindow.contentElement;
 

@@ -166,6 +166,9 @@ export async function Main() {
         if (currentSelectedValue) {
             selectItem(currentSelectedValue);
         }
+
+        const time = dateFormat(new Date(), hmsFormatter);
+        output.textContent = `Saved to localStorage at ${time}`;
     }
 
     // function saveToLocalStorage() {
@@ -197,6 +200,8 @@ export async function Main() {
             jsonEditor.setValue(globals);
             codeEditor.setValue(code);
         }
+        output.textContent = "";
+
     }
 
     function newItem() {
@@ -228,12 +233,13 @@ export async function Main() {
     addKey("F1", runCode);
     addKey("F2", startEditingCurrentOption);
     addKey("F5", runCode);
+    addKey("F6", downloadJSON);
 
     for (let i = 0; i < 9; ++i) {
         addKey(`${i + 1}`, () => { selectItemByIndex(i) }, undefined, { ctrlKey: true, altKey: false, shiftKey: false, metaKey: false });
     }
-    addKey(`s`, saveToCodemap, undefined, { ctrlKey: false, altKey: true, shiftKey: false, metaKey: false });
-    addKey(`n`, newItem, undefined, { ctrlKey: false, altKey: true, shiftKey: false, metaKey: false });
+    addKey(`s`, saveToCodemap, undefined, { ctrlKey: true, altKey: false, shiftKey: false, metaKey: false });
+    addKey(`n`, newItem, undefined, { ctrlKey: true, altKey: false, shiftKey: false, metaKey: false });
 
     addKey(`+`, increaseFont, undefined, { ctrlKey: true, altKey: false, shiftKey: false, metaKey: false });
     addKey(`-`, decreaseFont, undefined, { ctrlKey: true, altKey: false, shiftKey: false, metaKey: false });
@@ -248,12 +254,13 @@ export async function Main() {
     }
 
 
-    Button("Run (F1)", interfaceWindow.contentElement, runCode, "Runs the code with json-data");
-    Button("Download", interfaceWindow.contentElement, downloadJSON, "Downloads all items (code+json) together in a single json-file. You can upload that file by dragging it in here.");
+    Button("Run (F1/F5)", interfaceWindow.contentElement, runCode, "Runs the code with json-data");
+    Button("Download (F6)", interfaceWindow.contentElement, downloadJSON, "Downloads all items (code+json) together in a single json-file. You can upload that file by dragging it in here.");
 
     Info(interfaceWindow.contentElement);
 
     function downloadJSON() {
+        saveToCodemap();
         const jsonString = codeMapMgr.getJSON();
         const blob = new Blob([jsonString], { type: "application/json" });
         const url = URL.createObjectURL(blob);

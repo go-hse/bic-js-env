@@ -7,6 +7,17 @@ export const ymdFormatter = (yyyy, mm, dd) => `${yyyy}.${mm}.${dd}`;
 export const hmFormatter = (yyyy, mm, dd, hh, mi) => `${hh}:${mi}`;
 export const hmsFormatter = (yyyy, mm, dd, hh, mi, sc) => `${hh}:${mi}:${sc}`;
 
+const ymdhmsRegex = /^(\d{4})\.(\d{2})\.(\d{2})_(\d{2})\.(\d{2})\.(\d{2})$/;
+
+export function parseDate(dateString) {
+    const match = dateString.match(ymdhmsRegex);
+    if (match) {
+        const [, year, month, day, hour, minute, second] = match;
+        const date = new Date(`${year}-${month}-${day}T${hour}:${minute}:${second}`);
+        return date;
+    }
+}
+
 const WD = ["So.", "Mo.", "Di.", "Mi.", "Do.", "Fr.", "Sa."];
 
 export function dateFormat(d = new Date(), formatter = ymdhmsFormatter) {

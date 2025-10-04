@@ -318,7 +318,7 @@ export async function Main() {
 
         const reader = new FileReader();
         reader.onload = function (event) {
-            codeMapMgr.fromJSONstring(event.target.result);
+            codeMapMgr.fromJSONstring(event.target.result, true); // drop: force overwrite 
         };
         reader.readAsText(file);
     });
@@ -348,6 +348,7 @@ export async function Main() {
     });
 
     try {
+        console.log("Fetch default_codes.json from server");
         const response = await fetch('default_codes.json');
         const default_codes = await response.text();
         codeMapMgr.fromJSONstring(default_codes);

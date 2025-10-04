@@ -1,4 +1,4 @@
-import { dateFormat, ymdhmsFileFormatter } from "./dateformat.mjs";
+import { dateFormat, ymdhmsFileFormatter, parseDate } from "./dateformat.mjs";
 
 export function CodeMap(boxAdd, boxClear, boxSelect) {
 
@@ -59,14 +59,25 @@ export function CodeMap(boxAdd, boxClear, boxSelect) {
     }
 
 
-    function fromObject(json) {
+    function fromObject(json, forceOverwrite = false) {
         try {
             const newkeys = Object.keys(json);
             for (const key of newkeys) {
                 const newobj = json[key];
-                if (typeof newobj.code === "string" && typeof newobj.globals === "string") {
-                    codemap[key] = newobj;
-                    // console.log("added", key, newobj)
+                const importDate = parseDate(newobj.modified);
+                if (importDate && typeof newobj.code === "string" && typeof newobj.globals === "string") {
+                    if (codemap[key]) {
+                        const existingDate = parseDate(codemap[key].modified);
+                        if (forceOverwrite || importDate > existingDate) {
+                            codemap[key] = newobj;
+                            console.log(`key <${key}> overwrite from ${codemap[key].modified} < ${newobj.modified} `)
+                        } else {
+                            console.log(`key <${key}> exists from ${codemap[key].modified} > ${newobj.modified} `)
+                        }
+                    } else {
+                        codemap[key] = newobj; // 
+                        console.log("add", key, newobj.modified);
+                    }
                 }
             }
             refresh();
@@ -80,10 +91,10 @@ export function CodeMap(boxAdd, boxClear, boxSelect) {
         return JSON.stringify(codemap, null, 2);
     }
 
-    function fromJSONstring(s) {
+    function fromJSONstring(s, forceOverwrite = false) {
         try {
             const json = JSON.parse(s);
-            return fromObject(json);
+            return fromObject(json, forceOverwrite);
         } catch (err) {
             console.log(err.message, "string", s);
         }

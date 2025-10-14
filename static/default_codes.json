@@ -9,11 +9,6 @@
     "code": "function getURL_Parameters(url) {\n    let para = \"\", split = [], kv = {};\n    if (url.includes(\"?\")) {\n        para = _case.url.split(\"?\")[1];\n        split = para.split(\"&\");\n\n        for (const part of split) {\n            const [key, value] = part.split(\"=\");\n            kv[key] = value;\n        }\n    }\n    return kv;\n}\n\nfunction objToString(o) {\n  \tlet r = \"\";\n\tfor (const [key, value] of Object.entries(o)) {\n      r += `${key}: ${value}; `;\n\t  console.log(key, r);\n    }\n  \treturn r;\n}\n\nconst url_para = getURL_Parameters(_case.url);\nconst url_para_string = objToString(url_para);\n\nconst output = {\n    url_para,\n    url_para_string\n}\noutput;\n",
     "modified": "2025.07.29_07.49.08"
   },
-  "10_BIC-Variables": {
-    "globals": "\n{\n  \"_case\": {\n    \"creationDate\": \"2025-07-17T16:08:20.994+00:00\",\n    \"creator\": {\n    \t\"email\": \"andreas.roessler@hs-esslingen.de\",\n        \"name\": \"Rößler, Andreas\", \n        \"type\": \"user\" \n    },\n    \"owner\": {\n    \t\"email\": \"andreas.roessler@hs-esslingen.de\",\n        \"name\": \"Rößler, Andreas\", \n        \"type\": \"user\"\n    },\n    \"name\": \"Script_1752768500090\"\n  },\n  \"other\": \"Hello World\",\n  \"help\": \"kein Komma vor }\"\n}\n",
-    "code": "let family_name = \"Max\";\nlet given_name = \"Mustermann\";\n\nif (_case && _case.creator && _case.creator.name && _case.creator.name !== \"WEB FORM\") {\n    const name_split = _case.creator.name.split(\", \");\n    family_name = name_split[0];\n    given_name = name_split[1];\n}\n\nconst output = {\n    d: new Date().toString(),\n    family_name, given_name\n}\noutput;\n",
-    "modified": "2025.07.28_18.07.18"
-  },
   "50_FormulaJS": {
     "globals": "{\n  \"_case\": {\n    \"creationDate\": \"2025-07-17T16:08:20.994+00:00\",\n    \"creator\": {\n      \"email\": \"andreas.roessler@hs-esslingen.de\",\n      \"name\": \"Rößler, Andreas\",\n      \"type\": \"user\"\n    },\n    \"owner\": {\n      \"email\": \"andreas.roessler@hs-esslingen.de\",\n      \"name\": \"Rößler, Andreas\",\n      \"type\": \"user\"\n    },\n    \"name\": \"Script_1752768500090\"\n  },\n  \"other\": \"Hello World\",\n  \"help\": \"kein Komma vor }\"\n}",
     "code": "const ymdhmsFormatter = (yyyy, mm, dd, hh, mi, sc) =>\n  `${yyyy}-${mm}-${dd} ${hh}:${mi}:${sc}`;\nconst wdmyFormatter = (yyyy, mm, dd, hh, mi, sc, wd) =>\n  `${wd}, ${dd}.${mm}.${yyyy}`;\n\nconst WD = [\"So.\", \"Mo.\", \"Di.\", \"Mi.\", \"Do.\", \"Fr.\", \"Sa.\"];\n\nfunction dateFormat(d = new Date(), formatter = ymdhmsFormatter) {\n  const yyyy = d.getFullYear().toString();\n  const mm = (d.getMonth() + 1).toString().padStart(2, \"0\");\n  const dd = d.getDate().toString().padStart(2, \"0\");\n  const hh = d.getHours().toString().padStart(2, \"0\");\n  const mi = d.getMinutes().toString().padStart(2, \"0\");\n  const sc = d.getSeconds().toString().padStart(2, \"0\");\n  const wd = d.getDay();\n  return formatter(yyyy, mm, dd, hh, mi, sc, WD[wd]);\n}\n\nconst today = TODAY(); // FormulaJS\nconst now = new Date();\n\nconst oneDayInMs = 24 * 60 * 60 * 1000;\nconst daysToAdd = 90;\nconst addedDays = new Date(now.getTime() + daysToAdd * oneDayInMs);\n\nconst workday = WORKDAY(today, 90); // FormulaJS\n\nconst output = {\n  today,\n  addedDays,\n  workday,\n  ymdhms: dateFormat(now, ymdhmsFormatter),\n  wymdhms: dateFormat(now, wdmyFormatter),\n  awymdhms: dateFormat(addedDays, wdmyFormatter),\n};\noutput;\n",
@@ -26,28 +21,28 @@
   },
   "02_Zahlen": {
     "globals": "{\n  \"x\": 5,\n  \"name\": \"Anna\"\n}",
-    "code": "// Kommentar\n\nlet x = 2;\nlet y = 1.1;\n\nconsole.log(\"Typen\", typeof x, typeof y);\n\nconsole.log(\"Addition\", x + y);\nconsole.log(\"Subtraktion\", x - y);\nconsole.log(\"Multiplikation\", x * y);\nconsole.log(\"Division\", x / y);\n\nx = x - 1;\nconsole.log(\"Inkrement\", x++, ++x, ++x);\n\nx = 14; // Neue Zuweisung\ny = x % 5; // Modulo-Operator: ganzzahliger Rest\n\nconsole.log(\"Modulo\", y);\n",
-    "modified": "2025.09.02_11.00.34"
+    "code": "// Kommentar\n\nlet x = 2;\nlet y = 1.1;\n\nconsole.log(\"Typen\", typeof x, typeof y);\n\nconsole.log(\"Addition\", x + y);\nconsole.log(\"Subtraktion\", x - y);\nconsole.log(\"Multiplikation\", x * y);\nconsole.log(\"Division\", x / y);\n\n/*\nx = x + 1;\n++x; // Inkrement\n\nx = x - 1;\n--x; // Dekrement\n\ny = ++x;\n*/\n\nconsole.log(\"Inkrement\", x++, ++x, ++x);\n\nx = 14; // Neue Zuweisung\ny = x % 5; // Modulo-Operator: ganzzahliger Rest\n\nconsole.log(\"Modulo\", y);\n",
+    "modified": "2025.10.02_11.55.01"
   },
   "04_Zeichenketten": {
     "globals": "{\n  \"x\": 5,\n  \"name\": \"Anna\"\n}",
-    "code": "let vorname = \"Andreas\";\nlet nachname = \"Rößler\";\n\nlet adresse = `\nHochschule Esslingen,\nKanalstraße 33,\n73728 Esslingen\n`;\n\nconsole.log(\"Namen\", vorname, nachname);\nconsole.log(\"Adresse\", adresse);\n\nlet spezial = 'Das ist ein \"Test\".';\nconsole.log(spezial);\n\nspezial = \"Das ist ein 'Test'.\";\nconsole.log(spezial);\n\nlet completeName = `${nachname},asdfasd ${vorname}`;\nconsole.log(completeName);\n\ncompleteName = nachname + \": \" + vorname;\nconsole.log(completeName, completeName.length);\nconsole.log(completeName.toUpperCase());\nconsole.log(completeName.toLowerCase());\n\nlet splitName = completeName.split(\":\"); // Ergebnis: Array\nconsole.log(\"First Element:\", splitName[0]);\n",
-    "modified": "2025.09.02_11.05.10"
+    "code": "let vorname = \"Andreas\";\nlet nachname = \"Rößler\";\n\nlet adresse = `Hochschule Esslingen,\nKanalstraße 33,\n73728 Esslingen`;\n\nconsole.log(\"Namen\", vorname, nachname);\nconsole.log(\"Adresse\", adresse);\n\nlet spezial = 'Das ist ein \"Test\".';\nconsole.log(spezial);\n\nspezial = \"Das ist ein 'Test'.\";\nconsole.log(spezial);\n\nlet completeName = `Hallo ${nachname}, ${vorname}`;\ncompleteName = \"Hallo \" + nachname + \", \" + vorname;\n\nconsole.log(completeName);\n\ncompleteName = nachname + \": \" + vorname;\nconsole.log(completeName, completeName.length); // length: Attribut von Zeichenketten\nconsole.log(completeName.toUpperCase()); // Methode\nconsole.log(completeName.toLowerCase());\n\nlet splitName = completeName.split(\":\"); // Ergebnis: Array\n\nconsole.log(\"First Element:\", splitName[0]);\nconst test = \"  Hallo   \";\nconsole.log(\"Trim:\", `<${test}>  <${test.trim()}>`);\n",
+    "modified": "2025.10.02_12.44.52"
   },
   "03_einfache_Zeichenketten": {
-    "globals": "{\n  \"x\": 5\n  \"name\": \"Anna\"\n}",
-    "code": "const text = \"ABC\";\nconst zahl = \"123\";\n\nconst sonderzeichen = \"ÖÄÜ§$%&()?!\";\nconst omega_desertIslandEmoji = \"\\u03A9 \\u{1F3DD}\";\nconst check = \"\\u2713\";\nconst checkBox = \"\\u2610\";\nconst checkBoxChk = \"\\u2611\";\n\nconst smileys = \"\\u{1F606} \\u{1F60E} 😆 😎 😕\";\n\nconsole.log(sonderzeichen);\nconsole.log(omega_desertIslandEmoji);\nconsole.log(check, checkBox, checkBoxChk);\nconsole.log(smileys);\n",
-    "modified": "2025.09.02_11.02.30"
+    "globals": "{\n  \"x\": 5,\n  \"name\": \"Anna\"\n}",
+    "code": "const text = \"ABC\";\nconst zahl = \"123\";\n\nconst zeichenkette = 'Test \"Hallo\"'\n\nconsole.log(zeichenkette);\n\nconst sonderzeichen = \"ÖÄÜ§$%&()?!\";\nconst omega_desertIslandEmoji = \"\\u03A9 \\u{1F3DD}\";\nconst check = \"\\u2713\";  // Unicode\nconst checkBox = \"\\u2610\";\nconst checkBoxChk = \"\\u2611\";\n\nconst smileys = \"\\u{1F606} \\u{1F60E} 😆 😎 😕\";\n\nconsole.log(sonderzeichen);\nconsole.log(omega_desertIslandEmoji);\nconsole.log(check, checkBox, checkBoxChk);\nconsole.log(smileys);\n",
+    "modified": "2025.10.02_12.28.51"
   },
   "05_Zeichenketten_umwandeln": {
     "globals": "{\n  \"x\": 5,\n  \"name\": \"Anna\"\n}",
     "code": "const piString = \"3.1415\";\nconst pi = parseFloat(piString);\nconst radius = 10;\nconst umfang = 2 * pi * radius;\nconst umfangS1 = piString * 2 * radius;\nconst umfangS2 = piString + 2 + radius;\nconsole.log(\"Pi\", piString, typeof piString, pi, typeof pi);\nconsole.log(\"Umfang\", umfang);\nconsole.log(\"Umfang\", umfangS1);\nconsole.log(\"Umfang\", umfangS2);\n\nconsole.log(\"i\", parseInt(\"101\", 2));\nconsole.log(\"i\", parseInt(\"101\", 4));\nconsole.log(\"i\", parseInt(\"101\", 10));\n",
-    "modified": "2025.09.02_11.06.57"
+    "modified": "2025.10.02_12.51.37"
   },
   "06_Zeichenketten_Operationen": {
     "globals": "{\n  \"x\": 5,\n  \"name\": \"Anna\"\n}",
     "code": "const HSE = \"Hochschule Esslingen\";\nconsole.log(\"Anzahl der Zeichen:\", HSE.length);\nconsole.log(\"Replace:\", HSE.replace(\"Esslingen\", \"Heilbronn\"));\n\nconsole.log(\"Einzelne Zeichen:\", HSE[0], HSE[11]);\nconsole.log(HSE.slice(0, 10)); // 0 - 10\nconsole.log(HSE.slice(11)); // ab 11\nconsole.log(HSE.slice(-9)); // von hinten\n",
-    "modified": "2025.09.02_11.09.08"
+    "modified": "2025.10.02_12.52.01"
   },
   "10_Arrays": {
     "globals": "{\n  \"x\": 5,\n  \"name\": \"Anna\"\n}",
@@ -62,7 +57,7 @@
   "14_Datum_Zeit": {
     "globals": "{\n  \"x\": 5,\n  \"name\": \"Anna\"\n}",
     "code": "const d = new Date(); // das aktuelle Datum und Uhrzeit\nconsole.log(new Date(0).toLocaleString()); // 1 Parameter: Zeit in ms\nconsole.log(new Date(2025, 8, 30, 8, 15).toLocaleString()); // 2 oder mehr Parameter: Y/M-1/D/H/M/S/ms\n\nconst yyyy = d.getFullYear().toString();\nconst mm = (d.getMonth() + 1).toString().padStart(2, \"0\");\nconst dd = d.getDate().toString().padStart(2, \"0\");\nconst hh = d.getHours().toString().padStart(2, \"0\");\nconst mi = d.getMinutes().toString().padStart(2, \"0\");\nconst sc = d.getSeconds().toString().padStart(2, \"0\");\nconst wd = d.getDay();\n\nconst WD = [\"So.\", \"Mo.\", \"Di.\", \"Mi.\", \"Do.\", \"Fr.\", \"Sa.\"];\nconsole.log(`${WD[wd]}, ${dd}.${mm}.${yyyy} ${hh}:${mi}:${sc}`);\nconsole.log(d.toLocaleString());\nconst nextWeek = new Date(d);\nnextWeek.setDate(nextWeek.getDate() + 7); // rechnen mit Datum\nconsole.log(\"Local\", nextWeek.toLocaleString());\nconsole.log(\"ISO\", nextWeek.toISOString());\n\n// Datum von Zeichenkette umwandeln\nconst stringDateLocal = \"3.9.2025, 08:14:33\";\nconst parsedLocal = new Date(Date.parse(stringDateLocal)); // Date.parse liefert Zeitstempel (in ms)\n\nconst stringDateISO = \"2025-09-03T06:19:34.046Z\";\nconst parsedISO = new Date(Date.parse(stringDateISO));\n\nconsole.log(parsedLocal.toLocaleString(), \"---\", parsedISO.toString());\n",
-    "modified": "2025.09.02_11.20.08"
+    "modified": "2025.10.14_18.18.11"
   },
   "20_Verzweigung_If": {
     "globals": "{\n  \"x\": 5,\n  \"name\": \"Anna\"\n}",
@@ -121,22 +116,42 @@
   },
   "02_Zahlen_Vergleiche": {
     "globals": "{\n  \"x\": 5,\n  \"name\": \"Anna\"\n}",
-    "code": "const x = 10,\n  y = 15;\n\nconsole.log(\"x kleiner y:\", x < y);\nconsole.log(\"x gleich y:\", x === y);\nconsole.log(\"x kleiner gleich y:\", x <= y);\n\nconsole.log(\"mit und:\", x <= 10 && y < 15);\nconsole.log(\"mit oder:\", x <= 10 || y < 15);\n",
-    "modified": "2025.10.01_13.31.31"
+    "code": "const x = 10,\n  y = 15;\n\nconst w1 = 0 == false;\nconst w2 = 0 === false;\nconst w3 = \"\" == false;\n\n\n\nconsole.log(\"w1, w2, w3:\", w1, w2, w3, Boolean(\"\"));\n\nconsole.log(\"x kleiner y:\", x < y);\nconsole.log(\"x gleich y:\", x === y);\nconsole.log(\"x kleiner gleich y:\", x <= y);\n\nconsole.log(\"mit und:\", x <= 10 && y < 15); // wahr && falsch  === falsch\nconsole.log(\"mit oder:\", x <= 10 || y < 15); // wahr || falsch\n\nconsole.log(\"nicht wahr\", !(x <= 15));\n",
+    "modified": "2025.10.02_12.21.50"
   },
   "Ueb_02_Rechnung": {
     "globals": "{\n  \"x\": 5,\n  \"name\": \"Anna\"\n}",
-    "code": "// Berechne Deinen Body-Mass-Index:\nconst gewicht_kg = 20;\nconst groesse_m = 1.4;\nconst bmi = ...;\n\n\n// Rechne eine Temperatur in Grad/Celsius in Fahrenheit um:\nconst grad_celsius= 20;\nconst fahrenheit = ...;",
-    "modified": "2025.10.01_10.42.49"
+    "code": "// Berechne Deinen Body-Mass-Index:\nconst gewicht_kg = 20;\nconst groesse_m = 1.4;\nconst bmi = gewicht_kg / (groesse_m * groesse_m);\nconsole.log(\"mein bmi ist\", bmi);\n\n\n// Rechne eine Temperatur in Grad/Celsius in Fahrenheit um:\nconst grad_celsius= 20;\nconst fahrenheit = (grad_celsius * (9/5)) + 32;\nconsole.log(\"fahrenheit\", fahrenheit);\n\n",
+    "modified": "2025.10.02_12.04.25"
   },
   "Ueb_01_Syntax_Fehler": {
     "globals": "{\n  \"x\": 5,\n  \"name\": \"Anna\"\n}",
-    "code": "cnst zahl = 1;\nconst zahl = 1,1;\nconst text = 'ABC;\n\n/ ein Kommentar\n\nconsole.log(text zahl);\nconsole.log(text, zahl;\n\n",
-    "modified": "2025.10.01_10.43.24"
+    "code": "const zahl = 1;\nconst zahl2 = 1.1;\nconst text = \"ABC\";\n\n// ein Kommentar\n\nconsole.log(text, zahl);\nconsole.log(text, zahl2);\n\n",
+    "modified": "2025.10.02_11.28.12"
   },
   "00_Intro": {
     "globals": "{\n  \"a\": 1,\n  \"b\": \"test\"\n}",
-    "code": "// Kommentar: JS-Schulung am 02.10.2025\n\n// console.log gibt Variablen\n\nconsole.log(\"log:\", a, b);\n\n\n\nconst output = {\n  a,\n  d: new Date().toLocaleDateString(),\n};\n\noutput;\n",
-    "modified": "2025.10.02_10.32.30"
+    "code": "// Kommentar: JS-Schulung am 02.10.2025\n\n// console.log gibt Variablen\n\nconst zahl = parseInt(\"12\");\n\nlet nochnezahl = 3; // zahl an variable zuweisen\n\nconsole.log(\"log:\", a, b, (1 / 3).toFixed(1) );\n\nconst output = {\n  a,\n  d: new Date().toLocaleDateString(),\n};\n\noutput;\n",
+    "modified": "2025.10.02_11.13.45"
+  },
+  "91_BIC-Variables": {
+    "globals": "\n{\n  \"_case\": {\n    \"creationDate\": \"2025-07-17T16:08:20.994+00:00\",\n    \"creator\": {\n    \t\"email\": \"andreas.roessler@hs-esslingen.de\",\n        \"name\": \"Rößler, Andreas\", \n        \"type\": \"user\" \n    },\n    \"owner\": {\n    \t\"email\": \"andreas.roessler@hs-esslingen.de\",\n        \"name\": \"Rößler, Andreas\", \n        \"type\": \"user\"\n    },\n    \"name\": \"Script_1752768500090\"\n  },\n  \"other\": \"Hello World\",\n  \"help\": \"kein Komma vor }\"\n}\n",
+    "code": "let family_name = \"Max\";\nlet given_name = \"Mustermann\";\n\nif (_case && _case.creator && _case.creator.name && _case.creator.name !== \"WEB FORM\") {\n    const name_split = _case.creator.name.split(\", \");\n    family_name = name_split[0];\n    given_name = name_split[1];\n}\n\nconst output = {\n    d: new Date().toString(),\n    family_name, given_name\n}\noutput;\n",
+    "modified": "2025.10.14_17.22.50"
+  },
+  "10_Adv_Arrays": {
+    "globals": "{\n  \"x\": 5,\n  \"name\": \"Anna\"\n}",
+    "code": "// Multipliziere alle Zahlen im Array mit 2\nconst zahlen = [1, 2, 3, 4];\nconst verdoppelt = zahlen.map((x) => x * 2);\nconsole.log(verdoppelt); // [2, 4, 6, 8]\n\n// Summiere alle Zahlen eines Arrays\nconst werte = [10, 20, 30];\nconst summe = werte.reduce((acc, val) => acc + val, 0);\nconsole.log(summe); // 60\n\n// Filtere alle geraden Zahlen heraus\nconst zahlen2 = [1, 2, 3, 4, 5, 6];\nconst gerade = zahlen2.filter((x) => x % 2 === 0);\nconsole.log(gerade); // [2, 4, 6]\n\n// Finde den ersten Namen, der länger als 4 Buchstaben ist\nconst namen = [\"Tom\", \"Lisa\", \"Alexander\", \"Mia\"];\nconst langerName = namen.find((n) => n.length > 4);\nconsole.log(langerName); // \"Alexander\"\n\n// Prüfe, ob alle Werte größer als 0 sind\nconst zahlen3 = [3, 5, 8, 1];\nconst allePositiv = zahlen3.every((x) => x > 0);\nconsole.log(allePositiv); // true\n\n",
+    "modified": "2025.10.14_17.23.55"
+  },
+  "13_Obj_Arrays": {
+    "globals": "{\n  \"x\": 5,\n  \"name\": \"Anna\"\n}",
+    "code": "// Beispiel 1: Finde einen bestimmten Studierenden nach Matrikelnummer\nconst studenten = [\n  { name: \"Anna\", matrikel: 101 },\n  { name: \"Ben\", matrikel: 102 },\n  { name: \"Clara\", matrikel: 103 },\n];\nconsole.log(\"B 1\", studenten.find((s) => s.matrikel === 102).name);\n\n// Beispiel 2: Filtere alle Studierenden mit mehr als 30 ECTS-Punkten\nconst stud2 = [\n  { name: \"Anna\", ects: 28 },\n  { name: \"Ben\", ects: 42 },\n  { name: \"Clara\", ects: 36 },\n];\nconsole.log(\n  \"B 2\",\n  stud2\n    .filter((s) => s.ects > 30)\n    .map((s) => s.name)\n    .join(\", \"),\n);\n\n// Beispiel 3: Erzeuge ein Array mit nur den Namen der Dozierenden\nconst dozierende = [\n  { name: \"Dr. Meyer\", fach: \"Mathematik\" },\n  { name: \"Prof. Schulz\", fach: \"Informatik\" },\n];\nconsole.log(\n  \"B 3\",\n  dozierende.map((d) => d.name),\n);\n",
+    "modified": "2025.10.14_17.53.12"
+  },
+  "13b_Obj_Arrays": {
+    "globals": "{\n  \"x\": 5,\n  \"name\": \"Anna\"\n}",
+    "code": "// Beispiel 4: Berechne die durchschnittliche Note aller Prüfungen\nconst pruef = [\n  { fach: \"Mathe\", note: 2.0 },\n  { fach: \"Physik\", note: 1.7 },\n  { fach: \"Informatik\", note: 1.3 },\n];\nconsole.log(\n  \"B 4\",\n  (pruef.reduce((sum, p) => sum + p.note, 0) / pruef.length).toFixed(1),\n);\n\n\n// Beispiel 5: Erstelle aus den Kursdaten eine Liste der Kursnamen mit ECTS-Werten\nconst kurse = [\n  { name: \"Programmieren\", ects: 5 },\n  { name: \"Mathe 1\", ects: 6 },\n  { name: \"Ethik\", ects: 3 },\n];\nconsole.log(\n  \"B 5\",\n  kurse.map((k) => `${k.name} (${k.ects} ECTS)`),\n);\n",
+    "modified": "2025.10.14_17.52.37"
   }
 }

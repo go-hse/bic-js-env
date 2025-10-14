@@ -251,12 +251,18 @@ export function Windows() {
         }
     }
 
+    function toFront(id) {
+        if (windows[id]) {
+            bringToFront(windows[id].windowElement);
+        }
+    }
+
 
     function get(id) {
         return windows[id];
     }
 
-    return { create, get, setTitle };
+    return { create, get, setTitle, toFront };
 }
 
 

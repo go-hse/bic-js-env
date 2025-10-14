@@ -6,36 +6,6 @@ import { CodeMap } from "./codemap.mjs";
 import { formatJavascript, formatJSON } from "./format.mjs";
 import { Editor } from "./editor.mjs";
 
-const default_script = `
-// Default
-for (let i = 0; i < 5; i++) {
-    x += i;
-    console.log('x is', x);
-}
-
-let test_name = "test";
-try {
-    test_name = name;
-} catch (ex) {
-    console.log(ex.message);
-}
-
-const output = {
-    x,
-    d: new Date().toString(),
-    test_name
-}
-output;
-`;
-
-const default_json = `
-{
-    "x": 5, 
-    "name": "Anna",
-    "info": "hard coded default, not in local storage"
-}
-`;
-
 const editorID = "editor";
 const inputID = "json";
 const outputID = "output";
@@ -243,6 +213,12 @@ export async function Main() {
 
     addKey(`+`, increaseFont, undefined, { ctrlKey: true, altKey: false, shiftKey: false, metaKey: false });
     addKey(`-`, decreaseFont, undefined, { ctrlKey: true, altKey: false, shiftKey: false, metaKey: false });
+
+    addKey(`1`, () => { windowManager.toFront(editorID) }, undefined, { ctrlKey: true, altKey: false, shiftKey: false, metaKey: false });
+    addKey(`2`, () => { windowManager.toFront(inputID) }, undefined, { ctrlKey: true, altKey: false, shiftKey: false, metaKey: false });
+    addKey(`3`, () => { windowManager.toFront(outputID) }, undefined, { ctrlKey: true, altKey: false, shiftKey: false, metaKey: false });
+    addKey(`4`, () => { windowManager.toFront(selectID) }, undefined, { ctrlKey: true, altKey: false, shiftKey: false, metaKey: false });
+    addKey(`5`, () => { windowManager.toFront(uiID) }, undefined, { ctrlKey: true, altKey: false, shiftKey: false, metaKey: false });
 
     function increaseFont() {
         codeEditor.fontUp();

@@ -43,7 +43,7 @@ export function Button(text, parent, callback, explanation = "") {
 
 export function Info(parent) {
     const infoObj = compiled_date();
-    const InfoElement = dom("div", { class: "info" }, `Compiled ${infoObj.COMPILED}`);
+    const InfoElement = dom("div", { class: "info" }, `F7/F8 toggles layout; compiled ${infoObj.COMPILED}`);
     parent.appendChild(InfoElement);
 }
 
@@ -82,7 +82,7 @@ export function removeOptions(selectElement) {
 ///////////////////////////////////////////////////////////////////////////
 
 
-export function Windows() {
+export function Windows(onDragCallback) {
     const windows = {};
     let currentWindowId, zIndex = 0;
 
@@ -134,6 +134,8 @@ export function Windows() {
 
                 windowElement.style.left = newX + 'px';
                 windowElement.style.top = newY + 'px';
+
+                onDragCallback();
                 // console.log("move", id, newX, newY);
             }
         });
@@ -197,6 +199,25 @@ export function Windows() {
         windowElement.style.height = newHeight + 'px';
     }
 
+    function set(id, x, y, newWidth, newHeight) {
+        const windowElement = windows[id].windowElement;
+        windowElement.style.left = x + 'px';
+        windowElement.style.top = y + 'px';
+        windowElement.style.width = newWidth + 'px';
+        windowElement.style.height = newHeight + 'px';
+    }
+
+    function hide(id) {
+        const windowElement = windows[id].windowElement;
+        windowElement.style.display = "none";
+    }
+
+    function show(id) {
+        const windowElement = windows[id].windowElement;
+        windowElement.style.display = "flex";
+    }
+
+
     ///////////////////////////////////////////////////////////////////////////
     // INTERFACE
     ///////////////////////////////////////////////////////////////////////////
@@ -205,7 +226,7 @@ export function Windows() {
         options.title ??= `Title: ${id}`;
         const titleElement = dom("div", { class: "title-bar", id: `title_${id}`, text: options.title });
         const contentElement = dom("div", { id: `content_${id}` });
-        const resizeElement = dom("div", { class: "resizer", id: `content_${id}` });
+        const resizeElement = dom("div", { class: "resizer", id: `resize_${id}` });
 
         const windowElement = dom("div", { class: "window", id }, titleElement, contentElement, resizeElement);
         parent.appendChild(windowElement);
@@ -262,7 +283,7 @@ export function Windows() {
         return windows[id];
     }
 
-    return { create, get, setTitle, toFront };
+    return { create, get, setTitle, toFront, set, hide, show };
 }
 
 

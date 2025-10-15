@@ -5,6 +5,8 @@ import { Windows, dom, Button, removeOptions, Info } from "./dom.mjs";
 import { CodeMap } from "./codemap.mjs";
 import { formatJavascript, formatJSON } from "./format.mjs";
 import { Editor } from "./editor.mjs";
+import { BaseLayout, ReducedLayout } from "./layout.mjs"
+
 
 const editorID = "editor";
 const inputID = "json";
@@ -14,14 +16,24 @@ const selectID = "select";
 
 export async function Main() {
     const addKey = keyboard();
+    let isDragged = false;
 
-    const windowManager = Windows();
+    const windowManager = Windows(() => {
+        if (!isDragged) {
+            isDragged = true;
+            console.log("is dragged");
+        }
+    });
     const editorWindow = windowManager.create(editorID, document.body, { x: 0, y: 0, w: 400, h: 600 });
     const jsonWindow = windowManager.create(inputID, document.body, { x: 401, y: 0, w: 400, h: 600 });
     const outputWindow = windowManager.create(outputID, document.body, { x: 802, y: 100, w: 200, h: 600 });
     const interfaceWindow = windowManager.create(uiID, document.body, { x: 802, y: 0, w: 200, h: 600 });
     const selectWindow = windowManager.create(selectID, document.body, { x: 802, y: 0, w: 200, h: 600 });
     windowManager.setTitle(uiID, "Commands");
+
+    const baseLayout = BaseLayout(windowManager, editorID, outputID, inputID, uiID, selectID);
+    const reducedLayout = ReducedLayout(windowManager, editorID, outputID, inputID, uiID, selectID);
+    let currentLayout = baseLayout;
 
     const codeEditor = Editor(editorWindow.contentElement, true);
     const jsonEditor = Editor(jsonWindow.contentElement, false);
@@ -33,6 +45,13 @@ export async function Main() {
 
     selectWindow.contentElement.appendChild(selectBox);
     selectWindow.contentElement.appendChild(editInput);
+
+    function resize() {
+        if (!isDragged)
+            currentLayout.set(0, 0, window.innerWidth, window.innerHeight);
+    }
+    addEventListener("resize", resize);
+
 
     document.addEventListener('click', function (e) {
         if (e.target !== editInput && e.target !== selectBox) {
@@ -204,6 +223,16 @@ export async function Main() {
     addKey("F2", startEditingCurrentOption);
     addKey("F5", runCode);
     addKey("F6", downloadJSON);
+    addKey("F7", () => {
+        isDragged = false;
+        currentLayout = baseLayout;
+        currentLayout.set(0, 0, window.innerWidth, window.innerHeight);
+    });
+    addKey("F8", () => {
+        isDragged = false;
+        currentLayout = reducedLayout;
+        currentLayout.set(0, 0, window.innerWidth, window.innerHeight);
+    });
 
     for (let i = 0; i < 9; ++i) {
         addKey(`${i + 1}`, () => { selectItemByIndex(i) }, undefined, { ctrlKey: true, altKey: false, shiftKey: false, metaKey: false });

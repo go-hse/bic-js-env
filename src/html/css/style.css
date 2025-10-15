@@ -97,7 +97,8 @@ h4 {
 select {
     height: 100%;
     width: 100%;
-    position: relative;
+    box-sizing: border-box;
+    overflow: auto !important;
 }
 
 .select-input {
@@ -112,8 +113,6 @@ select {
 
 #output {
     background: #f5f5f5;
-    padding: 10px;
-    height: 150px;
     overflow-y: auto;
     font-family: monospace;
     white-space: pre-wrap;

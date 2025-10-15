@@ -94,11 +94,16 @@ h4 {
     overflow-x: hidden;
 }
 
-select {
-    height: 100%;
+.item {
     width: 100%;
-    box-sizing: border-box;
+    height: 100%;
+}
+
+select {
     overflow: auto !important;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
 }
 
 .select-input {

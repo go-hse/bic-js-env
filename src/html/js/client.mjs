@@ -41,9 +41,29 @@ export async function Main() {
     const output = outputWindow.contentElement;
 
     const editInput = dom("input", { type: "text", class: "select-input" });
-    const selectBox = dom("select", { size: "50" });
-
+    const selectBox = dom("select", { id: "select", size: 10 });
     selectWindow.contentElement.appendChild(selectBox);
+
+    new ResizeObserver(entries => {
+        if (selectBox.options.length) {
+            const option = selectBox.options[0];
+            const optionHeight = option.getBoundingClientRect().height;
+            const entry = entries[0];
+            const height = entry.contentRect.height;
+            const newSize = Math.max(1, Math.floor(height / optionHeight));
+            selectBox.size = newSize;
+        }
+    }).observe(selectWindow.contentElement);
+
+    selectBox.addEventListener("scroll", () => {
+        const option = selectBox.options[0];
+        const optionHeight = option.getBoundingClientRect().height;
+        const scrollTop = selectBox.scrollTop;
+        const firstVisibleIndex = Math.floor(scrollTop / optionHeight);
+        console.log("Erstes sichtbares Element:", firstVisibleIndex, "→", selectBox.options[firstVisibleIndex]?.text);
+    });
+
+
     selectWindow.contentElement.appendChild(editInput);
 
     function resize() {
@@ -94,18 +114,21 @@ export async function Main() {
 
     function startEditingOption(optionIndex) {
         const option = selectBox.options[optionIndex];
-        const optRect = option.getBoundingClientRect();
+        const optionHeight = option.getBoundingClientRect().height;
+        const scrollTop = selectBox.scrollTop;
+        const firstVisibleIndex = Math.floor(scrollTop / optionHeight);
+
 
         if (!option) return;
         const rect = selectBox.getBoundingClientRect();
-        const top = titleRectHeight + 5 + optRect.height * optionIndex; // rect.top + 
+        const top = titleRectHeight + optionHeight * (optionIndex - firstVisibleIndex);
 
-        console.log(`i ${optionIndex} rh ${rect.height} oh ${optRect.height}`);
+        console.log(`clicked on ${optionIndex} first is ${firstVisibleIndex} rh ${rect.height} oh ${optionHeight}`);
 
         editInput.style.left = "0px";
         editInput.style.top = top + "px";
         editInput.style.width = (rect.width - 20) + "px";
-        editInput.style.height = "14px";
+        editInput.style.height = `${optionHeight}px`;
         editInput.value = option.text;
         editInput.style.display = "block";
         editInput.focus();

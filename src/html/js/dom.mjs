@@ -189,7 +189,6 @@ export function Windows(onDragCallback) {
                 console.log("finished isResizing", id);
             }
         });
-
     }
 
     function setPosSize(windowElement, x, y, newWidth, newHeight) {
@@ -205,6 +204,11 @@ export function Windows(onDragCallback) {
         windowElement.style.top = y + 'px';
         windowElement.style.width = newWidth + 'px';
         windowElement.style.height = newHeight + 'px';
+        windows[id].onResize(windows[id].contentElement);
+    }
+
+    function setResizeCB(id, cb) {
+        windows[id].onResize = cb;
     }
 
     function hide(id) {
@@ -225,7 +229,7 @@ export function Windows(onDragCallback) {
     function create(id, parent, options) {
         options.title ??= `Title: ${id}`;
         const titleElement = dom("div", { class: "title-bar", id: `title_${id}`, text: options.title });
-        const contentElement = dom("div", { id: `content_${id}` });
+        const contentElement = dom("div", { id: `content_${id}`, class: "item" });
         const resizeElement = dom("div", { class: "resizer", id: `resize_${id}` });
 
         const windowElement = dom("div", { class: "window", id }, titleElement, contentElement, resizeElement);
@@ -234,7 +238,7 @@ export function Windows(onDragCallback) {
 
 
         currentWindowId = id;
-        windows[id] = { windowElement, titleElement, contentElement, resizeElement, options };
+        windows[id] = { windowElement, titleElement, contentElement, resizeElement, options, onResize: () => { } };
 
         makeDraggable(windowElement);
         makeResizable(windowElement);
@@ -283,7 +287,7 @@ export function Windows(onDragCallback) {
         return windows[id];
     }
 
-    return { create, get, setTitle, toFront, set, hide, show };
+    return { create, get, setTitle, toFront, set, hide, show, setResizeCB };
 }
 
 

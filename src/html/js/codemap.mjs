@@ -76,7 +76,7 @@ export function CodeMap(boxAdd, boxClear, boxSelect) {
                         }
                     } else {
                         codemap[key] = newobj; // 
-                        console.log("add", key, newobj.modified);
+                        // console.log("add", key, newobj.modified);
                     }
                 }
             }

@@ -50,8 +50,11 @@ export async function Main() {
             const optionHeight = option.getBoundingClientRect().height;
             const entry = entries[0];
             const height = entry.contentRect.height;
-            const newSize = Math.max(1, Math.floor(height / optionHeight));
-            selectBox.size = newSize;
+            if (height > 0 && optionHeight > 0) {
+                const newSize = Math.max(1, Math.floor(height / optionHeight));
+                selectBox.size = newSize;
+                // console.log("Resize select to ", newSize, height, optionHeight);
+            }
         }
     }).observe(selectWindow.contentElement);
 
@@ -60,7 +63,7 @@ export async function Main() {
         const optionHeight = option.getBoundingClientRect().height;
         const scrollTop = selectBox.scrollTop;
         const firstVisibleIndex = Math.floor(scrollTop / optionHeight);
-        console.log("Erstes sichtbares Element:", firstVisibleIndex, "→", selectBox.options[firstVisibleIndex]?.text);
+        // console.log("Erstes sichtbares Element:", firstVisibleIndex, "→", selectBox.options[firstVisibleIndex]?.text);
     });
 
 

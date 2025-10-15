@@ -8,11 +8,11 @@ import { Editor } from "./editor.mjs";
 import { BaseLayout, ReducedLayout } from "./layout.mjs"
 
 
-const editorID = "editor";
-const inputID = "json";
+const editorID = "editorContainer";
+const inputID = "jsonContainer";
 const outputID = "output";
-const uiID = "ui";
-const selectID = "select";
+const uiID = "uiContainer";
+const selectID = "selectContainer";
 
 export async function Main() {
     const addKey = keyboard();

@@ -269,11 +269,11 @@ export async function Main() {
     addKey(`+`, increaseFont, undefined, { ctrlKey: true, altKey: false, shiftKey: false, metaKey: false });
     addKey(`-`, decreaseFont, undefined, { ctrlKey: true, altKey: false, shiftKey: false, metaKey: false });
 
-    addKey(`1`, () => { windowManager.toFront(editorID) }, undefined, { ctrlKey: true, altKey: false, shiftKey: false, metaKey: false });
-    addKey(`2`, () => { windowManager.toFront(inputID) }, undefined, { ctrlKey: true, altKey: false, shiftKey: false, metaKey: false });
-    addKey(`3`, () => { windowManager.toFront(outputID) }, undefined, { ctrlKey: true, altKey: false, shiftKey: false, metaKey: false });
-    addKey(`4`, () => { windowManager.toFront(selectID) }, undefined, { ctrlKey: true, altKey: false, shiftKey: false, metaKey: false });
-    addKey(`5`, () => { windowManager.toFront(uiID) }, undefined, { ctrlKey: true, altKey: false, shiftKey: false, metaKey: false });
+    addKey(`1`, () => { windowManager.toFront(editorID) }, undefined, { ctrlKey: false, altKey: true, shiftKey: false, metaKey: false });
+    addKey(`2`, () => { windowManager.toFront(inputID) }, undefined, { ctrlKey: false, altKey: true, shiftKey: false, metaKey: false });
+    addKey(`3`, () => { windowManager.toFront(outputID) }, undefined, { ctrlKey: false, altKey: true, shiftKey: false, metaKey: false });
+    addKey(`4`, () => { windowManager.toFront(selectID) }, undefined, { ctrlKey: false, altKey: true, shiftKey: false, metaKey: false });
+    addKey(`5`, () => { windowManager.toFront(uiID) }, undefined, { ctrlKey: false, altKey: true, shiftKey: false, metaKey: false });
 
     function increaseFont() {
         codeEditor.fontUp();

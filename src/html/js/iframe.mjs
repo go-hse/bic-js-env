@@ -5,6 +5,7 @@ export function iframe(imported) {
     iframeEle.setAttribute("id", "sandbox");
     iframeEle.setAttribute("sandbox", "allow-same-origin allow-scripts allow-popups allow-forms");
 
+    console.log("imports to iframe", imported);
 
     iframeEle.onload = function (ele) {
         //  const localDocument = iframeEle.contentWindow.document;
@@ -72,13 +73,12 @@ export function iframe(imported) {
         const modNames = Object.keys(imported);
 
 
-        for (const modName of modNames) {
-            const mod = imported[modName];
+        for (const mod of imported) {
+            const modName = Object.keys(mod)[0];
             try {
                 Object.assign(context, mod);
-                console.log(modName, "OK");
+                window.parent.postMessage({ type: 'result', data: `loaded ${modName}` }, '*');
             } catch (ex) {
-                console.log(modName, "failed", ex.message);
                 window.parent.postMessage({ type: 'error', data: { message: ex.message }, line: modName, snippet: "" }, '*');
             }
         }

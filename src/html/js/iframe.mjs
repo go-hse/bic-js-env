@@ -1,6 +1,6 @@
 
 
-export function iframe(importedFormulaJS) {
+export function iframe(imported) {
     const iframeEle = document.createElement(`iframe`);
     iframeEle.setAttribute("id", "sandbox");
     iframeEle.setAttribute("sandbox", "allow-same-origin allow-scripts allow-popups allow-forms");
@@ -19,16 +19,8 @@ export function iframe(importedFormulaJS) {
 
         function safeEvalInScope(code, contextAsScope, name = "code.js") {
             try {
-                const keys = Object.keys(contextAsScope);
                 const wrappedCode = `${code}\n//# sourceURL=${name}`;
-                // console.log("call", code, contextAsScope);
                 return { result: new Function(`with (this) { return eval(${JSON.stringify(wrappedCode)}); }`).call(contextAsScope), error: null };
-
-                // // Erzeuge Funktion mit eval im Scope
-                // const fn = new Function(
-                //     `with (this) { return eval(${JSON.stringify(wrappedCode)}); }`
-                // );
-                // return { result: fn.call(contextAsScope), error: null };
             } catch (e) {
                 let line = null, col = null, file = name;
                 let snippet = null;
@@ -69,13 +61,6 @@ export function iframe(importedFormulaJS) {
             }
         }
 
-
-        function evalInScope(code, contextAsScope, name = "code.js") {
-            const wrappedCode = code + `\n//# sourceURL=${name}`;
-            // console.log("call", code, contextAsScope);
-            return new Function(`with (this) { return eval(${JSON.stringify(wrappedCode)}); }`).call(contextAsScope);
-        }
-
         const console = {
             log: (...args) => window.parent.postMessage({ type: 'log', data: args.join(' ') }, '*'),
             error: (...args) => window.parent.postMessage({ type: 'error', data: args.join(' ') }, '*')
@@ -84,20 +69,20 @@ export function iframe(importedFormulaJS) {
         // console.log(`myframe is loaded`, ele);
 
         const context = { console };
+        const modNames = Object.keys(imported);
 
-        try {
-            Object.assign(context, formulajs);
-            console.log("formulaJS OK");
-        } catch (ex) {
-            console.log("formulaJS assign failed", ex.message);
+
+        for (const modName of modNames) {
+            const mod = imported[modName];
             try {
-                let formulajs = importedFormulaJS;
-                Object.assign(context, formulajs);
-                console.log("formulaJS OK, 2nd");
+                Object.assign(context, mod);
+                console.log(modName, "OK");
             } catch (ex) {
-                console.log("importedFormulaJS assign failed", ex.message);
+                console.log(modName, "failed", ex.message);
+                window.parent.postMessage({ type: 'error', data: { message: ex.message }, line: modName, snippet: "" }, '*');
             }
         }
+
 
 
         // evalInScope(`for(let i=0; i<3; ++i) console.log(i);`, context);

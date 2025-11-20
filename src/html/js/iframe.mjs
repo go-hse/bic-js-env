@@ -3,7 +3,7 @@
 export function iframe(imported) {
     const iframeEle = document.createElement(`iframe`);
     iframeEle.setAttribute("id", "sandbox");
-    iframeEle.setAttribute("sandbox", "allow-same-origin allow-scripts allow-popups allow-forms");
+    iframeEle.setAttribute("sandbox", "allow-same-origin allow-scripts allow-popups allow-forms Access-Control-Allow-Origin");
 
     console.log("imports to iframe", imported);
 

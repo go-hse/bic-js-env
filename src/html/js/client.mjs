@@ -260,6 +260,11 @@ export async function Main() {
         currentLayout.set(0, 0, window.innerWidth, window.innerHeight);
     });
 
+    addKey("F9", () => {
+        updateFromServer();
+    });
+
+
     for (let i = 0; i < 9; ++i) {
         addKey(`${i + 1}`, () => { selectItemByIndex(i) }, undefined, { ctrlKey: true, altKey: false, shiftKey: false, metaKey: false });
     }
@@ -304,6 +309,18 @@ export async function Main() {
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
     }
+
+    async function updateFromServer(forceOverwrite = false) {
+        try {
+            console.log("Fetch default_codes.json from server");
+            const response = await fetch('default_codes.json');
+            const default_codes = await response.text();
+            output.textContent = codeMapMgr.fromJSONstring(default_codes, forceOverwrite);
+        } catch (ex) {
+            console.log(ex, default_codes);
+        }
+    }
+
 
     async function runCode() {
         saveToCodemap();
@@ -385,14 +402,7 @@ export async function Main() {
         subtree: true
     });
 
-    try {
-        console.log("Fetch default_codes.json from server");
-        const response = await fetch('default_codes.json');
-        const default_codes = await response.text();
-        codeMapMgr.fromJSONstring(default_codes);
-    } catch (ex) {
-        console.log(ex, default_codes);
-    }
+    await updateFromServer();
 
 }
 

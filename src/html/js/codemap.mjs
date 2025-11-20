@@ -60,6 +60,7 @@ export function CodeMap(boxAdd, boxClear, boxSelect) {
 
 
     function fromObject(json, forceOverwrite = false) {
+        let resultString = "";
         try {
             const newkeys = Object.keys(json);
             for (const key of newkeys) {
@@ -70,9 +71,7 @@ export function CodeMap(boxAdd, boxClear, boxSelect) {
                         const existingDate = parseDate(codemap[key].modified);
                         if (forceOverwrite || importDate > existingDate) {
                             codemap[key] = newobj;
-                            console.log(`key <${key}> overwrite from ${codemap[key].modified} < ${newobj.modified} `)
-                        } else {
-                            console.log(`key <${key}> exists from ${codemap[key].modified} > ${newobj.modified} `)
+                            resultString += `key <${key}> overwrite from ${codemap[key].modified} < ${newobj.modified}\n`;
                         }
                     } else {
                         codemap[key] = newobj; // 
@@ -85,6 +84,7 @@ export function CodeMap(boxAdd, boxClear, boxSelect) {
         } catch (err) {
             console.log(err.message, "string", s);
         }
+        return resultString;
     }
 
     function getJSON() {

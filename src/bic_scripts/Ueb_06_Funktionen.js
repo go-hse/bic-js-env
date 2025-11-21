@@ -19,7 +19,8 @@ function roomLabel(building, room) {
     return `<${building}-${room}>`;
 }
 
-console.log(roomLabel("F", 114));
+const roomLbl = (building, room) => `<${building}-${room}>`;
+console.log(roomLabel("F", 114), roomLbl("F", 114));
 
 /* 3.
 Schreibe eine Funktion gradeSum(), die beliebig viele Noten addiert.
